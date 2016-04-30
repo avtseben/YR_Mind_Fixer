@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">YR_Mind_Fixer</string>
+    <string name="title_activity_dummy">Dummy</string>
+    <string name="title_activity_fixed_unsorted_notes">FixedUnsortedNotes</string>
+    <string name="title_activity_">FixedUnsortedNotes</string>
+    <string name="title_activity_rooms_to_sort">RoomsToSort</string>
+    <string name="title_activity_what_to_do_with_note">WhatToDoWithNote</string>
+    <string name="title_activity_write_note">WriteNote</string>
+    <string name="title_activity_unsorted_note">UnsortedNote</string>
+    <string name="title_activity_rooms_manage">RoomManage</string>
+</resources>

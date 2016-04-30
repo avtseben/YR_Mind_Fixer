@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ru.alexandertsebenko.yr_mind_fixer">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".NoteManager">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".FixedUnsortedNotes"
+            android:label="@string/title_activity_fixed_unsorted_notes"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".RoomsToSort"
+            android:label="@string/title_activity_rooms_to_sort"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".WriteNote"
+            android:label="@string/title_activity_write_note"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".UnsortedNote"
+            android:label="@string/title_activity_unsorted_note"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".RoomsManage"
+            android:label="@string/title_activity_rooms_manage"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".AddRoom"
+            android:label="@string/title_activity_rooms_manage"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
+             App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+    </application>
+
+</manifest>
