@@ -2,6 +2,7 @@ package ru.alexandertsebenko.yr_mind_fixer;
 
 import android.app.Activity;
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -24,6 +25,7 @@ public class WriteNote extends Activity {
     }
     public void onClick(View view) {
         @SuppressWarnings("unchecked")
+        Intent intentBack = new Intent(this,FixedUnsortedNotes.class);
         TextNote tnote = null;
         switch (view.getId()) {
             case R.id.add:
@@ -32,6 +34,7 @@ public class WriteNote extends Activity {
                 Toast.makeText(this,"Сохранил",Toast.LENGTH_SHORT).show();//TODO out from hardcode
                 edtext.setText("");
                 datasource.createTextNote(note);//Заносим в БД
+                startActivity(intentBack);
                 break;
         }
     }

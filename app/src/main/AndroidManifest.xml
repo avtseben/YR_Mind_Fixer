@@ -8,7 +8,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".NoteManager">
+        <activity android:name=".FixedUnsortedNotes">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -16,14 +16,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".FixedUnsortedNotes"
+            android:name=".NoteManager"
             android:label="@string/title_activity_fixed_unsorted_notes"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity
+  <!--      <activity
             android:name=".RoomsToSort"
             android:label="@string/title_activity_rooms_to_sort"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity
+ -->       <activity
             android:name=".WriteNote"
             android:label="@string/title_activity_write_note"
             android:theme="@style/AppTheme.NoActionBar"></activity>
@@ -31,14 +31,14 @@
             android:name=".UnsortedNote"
             android:label="@string/title_activity_unsorted_note"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity
+<!--        <activity
             android:name=".RoomsManage"
             android:label="@string/title_activity_rooms_manage"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity
-            android:name=".AddRoom"
-            android:label="@string/title_activity_rooms_manage"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+<!-<activity
+        android:name=".AddRoom"
+        android:label="@string/title_activity_rooms_manage"
+        android:theme="@style/AppTheme.NoActionBar"></activity>-->
         <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
              App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
     </application>
