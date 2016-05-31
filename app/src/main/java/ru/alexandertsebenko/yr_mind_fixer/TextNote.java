@@ -2,7 +2,34 @@ package ru.alexandertsebenko.yr_mind_fixer;
 
 public class TextNote {
     private long id;
-    private String comment;
+    private String note;
+    private String noteTitle;
+    private String noteType;
+    private long creationDate;
+
+    public String getNoteType() {
+        return noteType;
+    }
+
+    public void setNoteType(String noteType) {
+        this.noteType = noteType;
+    }
+
+    public String getNoteTitle() {
+        return noteTitle;
+    }
+
+    public long getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(long creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public void setNoteTitle(String noteTitle) {
+        this.noteTitle = noteTitle;
+    }
 
     public long getId() {
         return id;
@@ -13,14 +40,14 @@ public class TextNote {
     }
 
     public String getTextNote() {
-        return comment;
+        return note;
     }
 
-    public void setTextNote(String comment) {
-        this.comment = comment;
+    public void setTextNote(String note) {
+        this.note = note;
     }
     @Override
     public String toString() {
-        return comment;
+        return note;
     }
 }

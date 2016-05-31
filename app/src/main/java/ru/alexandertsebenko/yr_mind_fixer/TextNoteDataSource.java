@@ -15,7 +15,7 @@ public class TextNoteDataSource {
     private SQLiteDatabase database;//обращение к глобальной SQLite БД на Android
     private MySQLiteHelper dbHelper;
     private String[] allColumns = { MySQLiteHelper.COLUMN_ID,//массив в которов все имена колонок таблицы
-            MySQLiteHelper.COLUMN_TEXT_NOTE };
+            MySQLiteHelper.COLUMN_TEXT_NOTE, MySQLiteHelper.COLUMN_NOTE_TITLE,MySQLiteHelper.COLUMN_NOTE_TYPE, MySQLiteHelper.COLUMN_TEXT_NOTE_CREATE_DATE };
     public TextNoteDataSource(Context context) {
         dbHelper = new MySQLiteHelper(context);
     }
@@ -27,9 +27,15 @@ public class TextNoteDataSource {
     public void close() {
         dbHelper.close();
     }
-    public TextNote createTextNote(String textNote) {
+    public SQLiteDatabase getDB() {
+        return database;
+    }
+    public TextNote createTextNote(String textNote, String textNoteTitle, String textNoteType, long createDate) {
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.COLUMN_TEXT_NOTE, textNote);
+        values.put(MySQLiteHelper.COLUMN_NOTE_TITLE, textNoteTitle);
+        values.put(MySQLiteHelper.COLUMN_NOTE_TYPE, textNoteType);
+        values.put(MySQLiteHelper.COLUMN_TEXT_NOTE_CREATE_DATE, createDate);
         long insertId = database.insert(MySQLiteHelper.TABLE_TEXT_NOTES, null,//Вставляем в таблицу
                 values);
         Cursor cursor = database.query(MySQLiteHelper.TABLE_TEXT_NOTES,//имя таблицы в Srting
@@ -57,6 +63,13 @@ public class TextNoteDataSource {
         database.delete(MySQLiteHelper.TABLE_TEXT_NOTES, MySQLiteHelper.COLUMN_ID
                 + " = " + _id, null);
     }
+    public void updateTextNoteById(long _id, String newText) {
+        ContentValues updateValues = new ContentValues();
+        updateValues.put(MySQLiteHelper.COLUMN_TEXT_NOTE, newText);
+        System.out.println("TextNote updated with id: " + _id);
+        database.update(MySQLiteHelper.TABLE_TEXT_NOTES, updateValues , MySQLiteHelper.COLUMN_ID
+                + " = " + _id, null);
+    }
     public List<TextNote> getAllTextNotes() {
         List<TextNote> textNotes = new ArrayList<TextNote>();
 
@@ -78,6 +91,9 @@ public class TextNoteDataSource {
         TextNote textNote = new TextNote();
         textNote.setId(cursor.getLong(0));
         textNote.setTextNote(cursor.getString(1));
+        textNote.setNoteTitle(cursor.getString(2));
+        textNote.setNoteType(cursor.getString(3));
+        textNote.setCreationDate(cursor.getLong(4));
         return textNote;
     }
 }

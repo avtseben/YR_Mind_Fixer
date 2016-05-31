@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="ru.alexandertsebenko.yr_mind_fixer.WriteNote">
+    tools:context=".WriteNoteActivity">
 
     <LinearLayout
         android:orientation="vertical"
@@ -37,7 +37,13 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="Есть мысль?"
             android:id="@+id/editText" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Здесь можно написать заголовок. Но не обязательно"
+            android:id="@+id/edit_text_title" />
 
     </LinearLayout>
 
