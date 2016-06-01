@@ -22,11 +22,13 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 public class AllNotesListActivity extends ListActivity {
     private TextNoteDataSource datasource;
 
-    final static int REQUEST_CODE_AVATAR_FOTO = 301;
+    final static int REQUEST_CODE_TAKE_FOTO = 301;
+    final static int REQUEST_CODE_RECORD_AUDIO = 302;
 
     final static String PUBLIC_APP_DIRECTORY = "MindFixerFiles";
     final static String FOTO_SUB_DIRECTORY = "foto";
@@ -48,7 +50,6 @@ public class AllNotesListActivity extends ListActivity {
 
         datasource = new TextNoteDataSource(this);
         datasource.open();
-//        Toast.makeText(AllNotesListActivity.this, "DB version: " + datasource.getDB().getVersion(), Toast.LENGTH_SHORT).show();
         makeAdapter();
 
     }
@@ -79,16 +80,29 @@ public class AllNotesListActivity extends ListActivity {
                 Toast.makeText(AllNotesListActivity.this,"Завожу фотоаппарат. Пару секунд..",Toast.LENGTH_SHORT).show();
                 intent = new Intent();
                 if(isExternalStorageWritable()) {
-                    uri = prepareFileUri(FOTO_SUB_DIRECTORY, "test1.jpeg");//TODO как делать уникальное новое имя файла?
-                    intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-                    startActivityForResult(intent,REQUEST_CODE_AVATAR_FOTO);
+                    String randomFileName = UUID.randomUUID().toString();
+                    randomFileName = new StringBuffer(randomFileName).append(".jpeg").toString();
+                    uri = prepareFileUri(FOTO_SUB_DIRECTORY, randomFileName);//получаем uri, оно нужно нам для ссылки из БД
+                    intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);//намерение на фотокамеру
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);//указываем куда сохранить
+                    startActivityForResult(intent,REQUEST_CODE_TAKE_FOTO);//Запускаем фото
                 } else {
                     Toast.makeText(AllNotesListActivity.this,"Внешняя память недоступна! Не куда сохранять",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.btn_add_audio:
                 Toast.makeText(AllNotesListActivity.this,"audio",Toast.LENGTH_SHORT).show();
+                intent = new Intent();
+                if(isExternalStorageWritable()) {
+                    String randomFileName = UUID.randomUUID().toString();
+                    randomFileName = new StringBuffer(randomFileName).append(".mp3").toString();
+                    uri = prepareFileUri(AUDIO_SUB_DIRECTORY, randomFileName);//получаем uri, оно нужно нам для ссылки из БД
+                    intent.setAction(MediaStore.Audio.Media.RECORD_SOUND_ACTION);//намерение на фотокамеру
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);//указываем куда сохранить
+                    startActivityForResult(intent,REQUEST_CODE_RECORD_AUDIO);//Запускаем фото
+                } else {
+                    Toast.makeText(AllNotesListActivity.this,"Внешняя память недоступна! Не куда сохранять",Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.btn_add_note:
                 Toast.makeText(AllNotesListActivity.this,"note",Toast.LENGTH_SHORT).show();
@@ -111,9 +125,9 @@ public class AllNotesListActivity extends ListActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
-                case REQUEST_CODE_AVATAR_FOTO:
-                    Toast.makeText(AllNotesListActivity.this,uri.toString(),Toast.LENGTH_SHORT).show();//TODO здесь все падает, почемуто uri = null
-                    datasource.createTextNote(uri.toString(),"no_title",NOTE_TYPE_FOTO,System.currentTimeMillis());
+                case REQUEST_CODE_TAKE_FOTO:
+                    datasource.open();//TODO дополнительно открываем доступ к базе
+                    datasource.createTextNote(uri.toString(),null,NOTE_TYPE_FOTO,System.currentTimeMillis());
                     break;
             }
         }
@@ -137,8 +151,7 @@ public class AllNotesListActivity extends ListActivity {
     protected void onResume() {
         datasource.open();
         Toast.makeText(AllNotesListActivity.this,"onResume1",Toast.LENGTH_SHORT).show();
-
-        makeAdapter();
+        makeAdapter();//формируем list
         super.onResume();
     }
 
@@ -146,5 +159,20 @@ public class AllNotesListActivity extends ListActivity {
     protected void onPause() {
         datasource.close();
         super.onPause();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if(uri != null)
+            outState.putString("uri",uri.toString());
+    }
+    @Override
+    protected void onRestoreInstanceState(Bundle state) {
+        super.onRestoreInstanceState(state);
+        Toast.makeText(AllNotesListActivity.this,"onRestoreInstanceState",Toast.LENGTH_SHORT).show();
+        if(state.getString("uri") != null) {
+            uri = Uri.parse(state.getString("uri"));
+        }
     }
 }
