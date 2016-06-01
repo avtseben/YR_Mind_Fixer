@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Camera;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,6 +16,10 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -43,16 +48,30 @@ public class AllNotesListActivity extends ListActivity {
     final static String NOTE_TYPE_VIDEO = "video";
 
     Uri uri = null;
+    MediaRecorder recorder = new MediaRecorder();
+    boolean recordStarted = false;
+    String fileName;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_all_notes);
 
+        fileName = Environment.getExternalStorageDirectory() + "/record.3gpp";
         datasource = new TextNoteDataSource(this);
         datasource.open();
         makeAdapter();
 
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
+
     private void makeAdapter() {
         List<TextNote> values = datasource.getAllTextNotes();
         ArrayAdapter<TextNote> adapter = new ArrayAdapter<TextNote>(this,
@@ -61,6 +80,7 @@ public class AllNotesListActivity extends ListActivity {
                 values);
         setListAdapter(adapter);
     }
+
     protected void onListItemClick(ListView l, View v, int position, long id) {
         TextNote item = (TextNote) getListAdapter().getItem(position);
         Intent intent = new Intent(this, NoteActivity.class);
@@ -70,69 +90,101 @@ public class AllNotesListActivity extends ListActivity {
         intent.putExtras(b);
         startActivity(intent);
     }
-    public void onClick(View view){
+
+    public void onClick(View view) throws IOException {
         Intent intent;
         switch (view.getId()) {
             case R.id.btn_add_video:
-                Toast.makeText(AllNotesListActivity.this,view.getContext().toString(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(AllNotesListActivity.this, view.getContext().toString(), Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btn_add_foto:
-                Toast.makeText(AllNotesListActivity.this,"Завожу фотоаппарат. Пару секунд..",Toast.LENGTH_SHORT).show();
+                Toast.makeText(AllNotesListActivity.this, "Завожу фотоаппарат. Пару секунд..", Toast.LENGTH_SHORT).show();
                 intent = new Intent();
-                if(isExternalStorageWritable()) {
+                if (isExternalStorageWritable()) {
                     String randomFileName = UUID.randomUUID().toString();
                     randomFileName = new StringBuffer(randomFileName).append(".jpeg").toString();
                     uri = prepareFileUri(FOTO_SUB_DIRECTORY, randomFileName);//получаем uri, оно нужно нам для ссылки из БД
                     intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);//намерение на фотокамеру
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);//указываем куда сохранить
-                    startActivityForResult(intent,REQUEST_CODE_TAKE_FOTO);//Запускаем фото
+                    startActivityForResult(intent, REQUEST_CODE_TAKE_FOTO);//Запускаем фото
                 } else {
-                    Toast.makeText(AllNotesListActivity.this,"Внешняя память недоступна! Не куда сохранять",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AllNotesListActivity.this, "Внешняя память недоступна! Не куда сохранять", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.btn_add_audio:
-                Toast.makeText(AllNotesListActivity.this,"audio",Toast.LENGTH_SHORT).show();
-                intent = new Intent();
-                if(isExternalStorageWritable()) {
-                    String randomFileName = UUID.randomUUID().toString();
-                    randomFileName = new StringBuffer(randomFileName).append(".mp3").toString();
-                    uri = prepareFileUri(AUDIO_SUB_DIRECTORY, randomFileName);//получаем uri, оно нужно нам для ссылки из БД
-                    intent.setAction(MediaStore.Audio.Media.RECORD_SOUND_ACTION);//намерение на фотокамеру
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);//указываем куда сохранить
-                    startActivityForResult(intent,REQUEST_CODE_RECORD_AUDIO);//Запускаем фото
-                } else {
-                    Toast.makeText(AllNotesListActivity.this,"Внешняя память недоступна! Не куда сохранять",Toast.LENGTH_SHORT).show();
+                if (!recordStarted) {
+                    Toast.makeText(AllNotesListActivity.this, "Запись! Говори!", Toast.LENGTH_SHORT).show();
+                    recordStarted = true;
+                    try {
+                        releaseRecorder();
+                        String randomFileName = UUID.randomUUID().toString();
+                        randomFileName = new StringBuffer(randomFileName).append(".3gpp").toString();
+                        uri = prepareFileUri(AUDIO_SUB_DIRECTORY, randomFileName);//получаем uri, оно нужно нам для ссылки из БД
+                        recorder = new MediaRecorder();
+                        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+                        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+                        recorder.setOutputFile(uri.getPath());
+                        recorder.prepare();
+                        recorder.start();//TODO отработать onSaveInstate
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    Toast.makeText(AllNotesListActivity.this, "Ok. Записано!", Toast.LENGTH_SHORT).show();
+                    if (recorder != null) {
+                        try {
+                            recorder.stop();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        recordStarted = false;
+                    }
                 }
                 break;
             case R.id.btn_add_note:
-                Toast.makeText(AllNotesListActivity.this,"note",Toast.LENGTH_SHORT).show();
+                Toast.makeText(AllNotesListActivity.this, "note", Toast.LENGTH_SHORT).show();
                 intent = new Intent(this, WriteNoteActivity.class);
                 startActivity(intent);
                 break;
+        }
+    }
+
+    private void releaseRecorder() {
+        if (recorder != null) {
+            recorder.release();
+            recorder = null;
         }
     }
     protected Uri prepareFileUri(String album, String filename) {
         Uri uri = null;
         try {
             File path = getAppStorageDir(album);
-            File fotoFile = new File (path.getCanonicalPath(), filename);
+            File fotoFile = new File(path.getCanonicalPath(), filename);
             uri = Uri.fromFile(fotoFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return uri;
     }
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_CODE_TAKE_FOTO:
-                    datasource.open();//TODO дополнительно открываем доступ к базе
-                    datasource.createTextNote(uri.toString(),null,NOTE_TYPE_FOTO,System.currentTimeMillis());
+                    datasource.open();//дополнительно открываем доступ к базе
+                    datasource.createTextNote(uri.toString(), null, NOTE_TYPE_FOTO, System.currentTimeMillis());
+                    break;
+                case REQUEST_CODE_RECORD_AUDIO:
+                    datasource.open();//TODO здесь нет Intent. всё происходит в методе онКлик  так что сохранять нужно там
+                    datasource.createTextNote(uri.toString(), null, NOTE_TYPE_AUDIO, System.currentTimeMillis());
                     break;
             }
         }
 
     }
+
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
@@ -140,6 +192,7 @@ public class AllNotesListActivity extends ListActivity {
         }
         return false;
     }
+
     public File getAppStorageDir(String albumName) throws IOException {
         File file = new File(Environment.getExternalStoragePublicDirectory(
                 PUBLIC_APP_DIRECTORY), albumName);
@@ -148,9 +201,10 @@ public class AllNotesListActivity extends ListActivity {
         }
         return file;
     }
+
     protected void onResume() {
         datasource.open();
-        Toast.makeText(AllNotesListActivity.this,"onResume1",Toast.LENGTH_SHORT).show();
+        Toast.makeText(AllNotesListActivity.this, "onResume1", Toast.LENGTH_SHORT).show();
         makeAdapter();//формируем list
         super.onResume();
     }
@@ -164,15 +218,56 @@ public class AllNotesListActivity extends ListActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if(uri != null)
-            outState.putString("uri",uri.toString());
+        if (uri != null)
+            outState.putString("uri", uri.toString());
     }
+
     @Override
     protected void onRestoreInstanceState(Bundle state) {
         super.onRestoreInstanceState(state);
-        Toast.makeText(AllNotesListActivity.this,"onRestoreInstanceState",Toast.LENGTH_SHORT).show();
-        if(state.getString("uri") != null) {
+        Toast.makeText(AllNotesListActivity.this, "onRestoreInstanceState", Toast.LENGTH_SHORT).show();
+        if (state.getString("uri") != null) {
             uri = Uri.parse(state.getString("uri"));
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "AllNotesList Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://ru.alexandertsebenko.yr_mind_fixer/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "AllNotesList Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://ru.alexandertsebenko.yr_mind_fixer/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
     }
 }
