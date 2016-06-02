@@ -10,6 +10,7 @@ import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -136,6 +137,8 @@ public class AllNotesListActivity extends ListActivity {
                     if (recorder != null) {
                         try {
                             recorder.stop();
+                            datasource.open();
+                            datasource.createTextNote(uri.toString(), null, NOTE_TYPE_AUDIO, System.currentTimeMillis());
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -177,8 +180,6 @@ public class AllNotesListActivity extends ListActivity {
                     datasource.createTextNote(uri.toString(), null, NOTE_TYPE_FOTO, System.currentTimeMillis());
                     break;
                 case REQUEST_CODE_RECORD_AUDIO:
-                    datasource.open();//TODO здесь нет Intent. всё происходит в методе онКлик  так что сохранять нужно там
-                    datasource.createTextNote(uri.toString(), null, NOTE_TYPE_AUDIO, System.currentTimeMillis());
                     break;
             }
         }
@@ -220,14 +221,22 @@ public class AllNotesListActivity extends ListActivity {
         super.onSaveInstanceState(outState);
         if (uri != null)
             outState.putString("uri", uri.toString());
+        if (recordStarted) {
+            outState.putBoolean("recordStarted", recordStarted);
+            outState.putParcelable("recorder", (Parcelable) recorder);
+        }
+
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle state) {
         super.onRestoreInstanceState(state);
         Toast.makeText(AllNotesListActivity.this, "onRestoreInstanceState", Toast.LENGTH_SHORT).show();
-        if (state.getString("uri") != null) {
+        if (state.getString("uri") != null)
             uri = Uri.parse(state.getString("uri"));
+        if (state.getBoolean("recordStarted")) {
+            recordStarted = state.getBoolean("recordStarted");
+            recorder = (MediaRecorder) state.getParcelable("recorder");
         }
     }
 
