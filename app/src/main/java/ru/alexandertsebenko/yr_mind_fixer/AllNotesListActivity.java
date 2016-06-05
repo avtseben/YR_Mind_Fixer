@@ -113,7 +113,10 @@ public class AllNotesListActivity extends ListActivity {
                 }
                 break;
             case R.id.btn_add_audio:
-                if (!recordStarted) {
+                Toast.makeText(AllNotesListActivity.this, "audio", Toast.LENGTH_SHORT).show();
+                intent = new Intent(this, RecordSoundActivity.class);
+                startActivity(intent);
+/*                if (!recordStarted) {
                     Toast.makeText(AllNotesListActivity.this, "Запись! Говори!", Toast.LENGTH_SHORT).show();
                     recordStarted = true;
                     try {
@@ -144,7 +147,7 @@ public class AllNotesListActivity extends ListActivity {
                         }
                         recordStarted = false;
                     }
-                }
+                }*/
                 break;
             case R.id.btn_add_note:
                 Toast.makeText(AllNotesListActivity.this, "note", Toast.LENGTH_SHORT).show();
@@ -160,7 +163,7 @@ public class AllNotesListActivity extends ListActivity {
             recorder = null;
         }
     }
-    protected Uri prepareFileUri(String album, String filename) {
+    protected static Uri prepareFileUri(String album, String filename) {
         Uri uri = null;
         try {
             File path = getAppStorageDir(album);
@@ -194,7 +197,7 @@ public class AllNotesListActivity extends ListActivity {
         return false;
     }
 
-    public File getAppStorageDir(String albumName) throws IOException {
+    public static File getAppStorageDir(String albumName) throws IOException {
         File file = new File(Environment.getExternalStoragePublicDirectory(
                 PUBLIC_APP_DIRECTORY), albumName);
         if (!file.mkdirs()) {
