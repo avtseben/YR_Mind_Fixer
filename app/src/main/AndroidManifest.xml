@@ -20,10 +20,6 @@
             android:label="@string/title_activity_write_note"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
-            android:name=".RecordSoundActivity"
-            android:label="RecordSound"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity
             android:name=".NoteActivity"
             android:label="@string/title_activity_unsorted_note"
             android:theme="@style/AppTheme.NoActionBar"></activity>

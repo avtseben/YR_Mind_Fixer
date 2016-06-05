@@ -1,6 +1,10 @@
 package ru.alexandertsebenko.yr_mind_fixer;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,17 +16,47 @@ import android.widget.Button;
 
 import java.util.UUID;
 
-public class RecordSoundFragment extends Fragment {
+import static ru.alexandertsebenko.yr_mind_fixer.R.color.colorAddNewBar;
+import static ru.alexandertsebenko.yr_mind_fixer.R.color.colorPrimary;
+
+public class RecordSoundFragment extends DialogFragment  implements DialogInterface.OnClickListener {
 
     Uri uri = null;
     boolean recordStarted = false;
     MediaRecorder recorder = new MediaRecorder();
-    String fileName;
+//    String fileName;
     TextNoteDataSource datasource;
-    Button button;
+//    Button button;
     String LOG_TAG = "FragmentLog";
 
 
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        startSoundRecord();
+        setRetainInstance(true);
+        AlertDialog.Builder adb = new AlertDialog.Builder(getActivity())
+                .setTitle("Идет запись. Говорите ну!")
+                .setPositiveButton(R.string.record_dialog_positive, this)
+                .setNegativeButton(R.string.record_dialog_negative, this)
+                .setMessage("Для остановки и сохранения нажмите ОК, если нехотите сохранять, нажмите Отмена");
+        return adb.create();
+    }
+
+    public void onClick(DialogInterface dialog, int which) {
+        int i = 0;
+        switch (which) {
+            case Dialog.BUTTON_POSITIVE:
+                i = R.string.record_dialog_positive;
+                stopAndSaveRecord();
+                break;
+            case Dialog.BUTTON_NEGATIVE:
+                i = R.string.record_dialog_negative;
+                releaseRecorder();
+                break;
+        }
+        if (i > 0)
+            Log.d(LOG_TAG, "Dialog 2: " + getResources().getString(i));
+    }
+/*
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(LOG_TAG, "Fragment1 onCreateView");
@@ -35,9 +69,10 @@ public class RecordSoundFragment extends Fragment {
                 soundRecord();
             }
         });
+        setRetainInstance(true);
         return v;
-    }
-    public void soundRecord() {
+    }*/
+    public void startSoundRecord() {
         if (!recordStarted) {
             recordStarted = true;
             try {
@@ -56,24 +91,34 @@ public class RecordSoundFragment extends Fragment {
                 e.printStackTrace();
             }
         }
-        else {
-            if (recorder != null) {
-                try {
-                    recorder.stop();
-                    datasource.open();
-                    datasource.createTextNote(uri.toString(), null, AllNotesListActivity.NOTE_TYPE_AUDIO, System.currentTimeMillis());
-                    datasource.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                recordStarted = false;
-            }
-        }
+    }
+    private void stopAndSaveRecord(){
+      if (recorder != null) {
+          try {
+              recorder.stop();
+              datasource = new TextNoteDataSource(getActivity().getApplicationContext());
+              datasource.open();
+              datasource.createTextNote(uri.toString(), null, AllNotesListActivity.NOTE_TYPE_AUDIO, System.currentTimeMillis());
+              Log.d(LOG_TAG, "record OK");
+              datasource.close();
+          } catch (Exception e) {
+              e.printStackTrace();
+          }
+          recordStarted = false;
+      }
     }
     private void releaseRecorder() {
         if (recorder != null) {
             recorder.release();
             recorder = null;
+            Log.d(LOG_TAG, "record Canceled");
         }
+    }
+    @Override
+    public void onDestroyView() {
+        if (getDialog() != null && getRetainInstance()) {
+            getDialog().setDismissMessage(null);
+        }
+        super.onDestroyView();
     }
 }

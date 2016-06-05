@@ -20,5 +20,7 @@
     <string name="back_button_text">Назад</string>
     <string name="toast_note_write_ok">Сохранил</string>
     <string name="toast_note_is_null">Пустую заметку нет смысла сохранять, чувак</string>
+    <string name="record_dialog_positive">OK</string>
+    <string name="record_dialog_negative">Отмена</string>
 
 </resources>

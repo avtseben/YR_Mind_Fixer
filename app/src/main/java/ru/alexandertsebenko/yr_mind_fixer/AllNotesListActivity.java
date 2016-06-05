@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -52,6 +53,7 @@ public class AllNotesListActivity extends ListActivity {
     MediaRecorder recorder = new MediaRecorder();
     boolean recordStarted = false;
     String fileName;
+    RecordSoundFragment soundRecordDialog;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -113,41 +115,8 @@ public class AllNotesListActivity extends ListActivity {
                 }
                 break;
             case R.id.btn_add_audio:
-                Toast.makeText(AllNotesListActivity.this, "audio", Toast.LENGTH_SHORT).show();
-                intent = new Intent(this, RecordSoundActivity.class);
-                startActivity(intent);
-/*                if (!recordStarted) {
-                    Toast.makeText(AllNotesListActivity.this, "Запись! Говори!", Toast.LENGTH_SHORT).show();
-                    recordStarted = true;
-                    try {
-                        releaseRecorder();
-                        String randomFileName = UUID.randomUUID().toString();
-                        randomFileName = new StringBuffer(randomFileName).append(".3gpp").toString();
-                        uri = prepareFileUri(AUDIO_SUB_DIRECTORY, randomFileName);//получаем uri, оно нужно нам для ссылки из БД
-                        recorder = new MediaRecorder();
-                        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-                        recorder.setOutputFile(uri.getPath());
-                        recorder.prepare();
-                        recorder.start();//TODO отработать onSaveInstate
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                else {
-                    Toast.makeText(AllNotesListActivity.this, "Ok. Записано!", Toast.LENGTH_SHORT).show();
-                    if (recorder != null) {
-                        try {
-                            recorder.stop();
-                            datasource.open();
-                            datasource.createTextNote(uri.toString(), null, NOTE_TYPE_AUDIO, System.currentTimeMillis());
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        recordStarted = false;
-                    }
-                }*/
+                soundRecordDialog = new RecordSoundFragment();
+                soundRecordDialog.show(getFragmentManager(),"RECORD");
                 break;
             case R.id.btn_add_note:
                 Toast.makeText(AllNotesListActivity.this, "note", Toast.LENGTH_SHORT).show();
