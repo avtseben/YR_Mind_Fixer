@@ -70,7 +70,7 @@ public class RecordSoundFragment extends DialogFragment  implements DialogInterf
                 recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
                 recorder.setOutputFile(uri.getPath());
                 recorder.prepare();
-                recorder.start();//TODO отработать onSaveInstate
+                recorder.start();
             } catch (Exception e) {
                 e.printStackTrace();
             }

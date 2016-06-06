@@ -1,6 +1,7 @@
 package ru.alexandertsebenko.yr_mind_fixer;
 
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -31,7 +32,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
-public class AllNotesListActivity extends ListActivity {
+public class AllNotesListActivity extends Activity {
     private TextNoteDataSource datasource;
 
     final static int REQUEST_CODE_TAKE_FOTO = 301;
@@ -49,10 +50,11 @@ public class AllNotesListActivity extends ListActivity {
     final static String NOTE_TYPE_FOTO = "foto";
     final static String NOTE_TYPE_VIDEO = "video";
 
+    NoteAdapter noteAdapter;
     Uri uri = null;
     MediaRecorder recorder = new MediaRecorder();
     boolean recordStarted = false;
-    String fileName;
+//    String fileName;
     RecordSoundFragment soundRecordDialog;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -65,29 +67,30 @@ public class AllNotesListActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_all_notes);
 
-        fileName = Environment.getExternalStorageDirectory() + "/record.3gpp";
+//        fileName = Environment.getExternalStorageDirectory() + "/record.3gpp";
         datasource = new TextNoteDataSource(this);
         datasource.open();
-        makeAdapter();
+        //makeAdapter();
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
-
-    public void makeAdapter() {
+/*    public void makeAdapter() {
         List<TextNote> values = datasource.getAllTextNotes();
         ArrayAdapter<TextNote> adapter = new ArrayAdapter<TextNote>(this,
                 R.layout.note_raw,
                 R.id.label,
                 values);
         setListAdapter(adapter);
+    }*/
+    public void makeAdapter() {
+        List<TextNote> values = datasource.getAllTextNotes();
+        noteAdapter = new NoteAdapter(this, values);
+        ListView listView = (ListView)findViewById(R.id.lvMain);
+        listView.setAdapter(noteAdapter);
     }
-    public void doPositive() {
-        Toast.makeText(AllNotesListActivity.this, "OK Click", Toast.LENGTH_SHORT).show();
-    }
-
-    protected void onListItemClick(ListView l, View v, int position, long id) {
+/*    protected void onListItemClick(ListView l, View v, int position, long id) {
         TextNote item = (TextNote) getListAdapter().getItem(position);
         Intent intent = new Intent(this, NoteActivity.class);
         Bundle b = new Bundle();
@@ -95,7 +98,7 @@ public class AllNotesListActivity extends ListActivity {
         b.putLong("ID", item.getId());
         intent.putExtras(b);
         startActivity(intent);
-    }
+    }*/
 
     public void onClick(View view) throws IOException {
         Intent intent;
@@ -127,13 +130,6 @@ public class AllNotesListActivity extends ListActivity {
                 intent = new Intent(this, WriteNoteActivity.class);
                 startActivity(intent);
                 break;
-        }
-    }
-
-    private void releaseRecorder() {
-        if (recorder != null) {
-            recorder.release();
-            recorder = null;
         }
     }
     protected static Uri prepareFileUri(String album, String filename) {
@@ -197,10 +193,10 @@ public class AllNotesListActivity extends ListActivity {
         super.onSaveInstanceState(outState);
         if (uri != null)
             outState.putString("uri", uri.toString());
-        if (recordStarted) {
+/*        if (recordStarted) {
             outState.putBoolean("recordStarted", recordStarted);
             outState.putParcelable("recorder", (Parcelable) recorder);
-        }
+        }*/
 
     }
 
@@ -210,13 +206,13 @@ public class AllNotesListActivity extends ListActivity {
         Toast.makeText(AllNotesListActivity.this, "onRestoreInstanceState", Toast.LENGTH_SHORT).show();
         if (state.getString("uri") != null)
             uri = Uri.parse(state.getString("uri"));
-        if (state.getBoolean("recordStarted")) {
+/*        if (state.getBoolean("recordStarted")) {
             recordStarted = state.getBoolean("recordStarted");
             recorder = (MediaRecorder) state.getParcelable("recorder");
-        }
+        }*/
     }
 
-    @Override
+/*    @Override
     public void onStart() {
         super.onStart();
 
@@ -254,5 +250,5 @@ public class AllNotesListActivity extends ListActivity {
         );
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
-    }
+    }*/
 }
