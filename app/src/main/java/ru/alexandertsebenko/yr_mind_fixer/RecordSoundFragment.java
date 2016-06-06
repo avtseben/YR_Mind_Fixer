@@ -3,32 +3,32 @@ package ru.alexandertsebenko.yr_mind_fixer;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import java.util.UUID;
 
-import static ru.alexandertsebenko.yr_mind_fixer.R.color.colorAddNewBar;
-import static ru.alexandertsebenko.yr_mind_fixer.R.color.colorPrimary;
 
 public class RecordSoundFragment extends DialogFragment  implements DialogInterface.OnClickListener {
 
     Uri uri = null;
     boolean recordStarted = false;
     MediaRecorder recorder = new MediaRecorder();
-//    String fileName;
     TextNoteDataSource datasource;
-//    Button button;
     String LOG_TAG = "FragmentLog";
 
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         startSoundRecord();
@@ -50,28 +50,12 @@ public class RecordSoundFragment extends DialogFragment  implements DialogInterf
                 break;
             case Dialog.BUTTON_NEGATIVE:
                 i = R.string.record_dialog_negative;
-                releaseRecorder();
+                cancelAndDeleteRecord();
                 break;
         }
         if (i > 0)
             Log.d(LOG_TAG, "Dialog 2: " + getResources().getString(i));
     }
-/*
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        Log.d(LOG_TAG, "Fragment1 onCreateView");
-        View v = inflater.inflate(R.layout.fragment_sound_record, null);
-        datasource = new TextNoteDataSource(v.getContext());
-        button = (Button)v.findViewById(R.id.button_fragment_record);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Log.d(LOG_TAG, "Button click in Fragment1");
-                soundRecord();
-            }
-        });
-        setRetainInstance(true);
-        return v;
-    }*/
     public void startSoundRecord() {
         if (!recordStarted) {
             recordStarted = true;
@@ -92,6 +76,10 @@ public class RecordSoundFragment extends DialogFragment  implements DialogInterf
             }
         }
     }
+    /*
+    * stopAndSaveRecord() останавливает запись в файл, сохраняет ссылку на файл в БД
+    * и обновляет список в активности
+    * */
     private void stopAndSaveRecord(){
       if (recorder != null) {
           try {
@@ -99,6 +87,7 @@ public class RecordSoundFragment extends DialogFragment  implements DialogInterf
               datasource = new TextNoteDataSource(getActivity().getApplicationContext());
               datasource.open();
               datasource.createTextNote(uri.toString(), null, AllNotesListActivity.NOTE_TYPE_AUDIO, System.currentTimeMillis());
+              ((AllNotesListActivity)getActivity()).makeAdapter();
               Log.d(LOG_TAG, "record OK");
               datasource.close();
           } catch (Exception e) {
@@ -107,13 +96,21 @@ public class RecordSoundFragment extends DialogFragment  implements DialogInterf
           recordStarted = false;
       }
     }
+    /*
+    * cancelAndDeleteRecord() обновляет recorder и удаляем звуковой файл
+    * */
+    private void cancelAndDeleteRecord(){
+        releaseRecorder();
+        NoteActivity.deleteFileByURI(uri);
+        Log.d(LOG_TAG, "record Canceled");
+    }
     private void releaseRecorder() {
         if (recorder != null) {
             recorder.release();
             recorder = null;
-            Log.d(LOG_TAG, "record Canceled");
         }
     }
+    //Запрет диалогу уничтожаться при псмене ориентации
     @Override
     public void onDestroyView() {
         if (getDialog() != null && getRetainInstance()) {

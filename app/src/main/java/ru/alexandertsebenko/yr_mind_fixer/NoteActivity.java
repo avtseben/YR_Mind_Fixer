@@ -105,7 +105,7 @@ public class NoteActivity extends Activity {
                 })
                 .show();
     }
-    private void deleteFileByURI(Uri uri){
+    public static void deleteFileByURI(Uri uri){
         File file = new File(uri.getPath());
         try {
             file.delete();

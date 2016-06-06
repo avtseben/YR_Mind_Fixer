@@ -75,13 +75,16 @@ public class AllNotesListActivity extends ListActivity {
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
-    private void makeAdapter() {
+    public void makeAdapter() {
         List<TextNote> values = datasource.getAllTextNotes();
         ArrayAdapter<TextNote> adapter = new ArrayAdapter<TextNote>(this,
                 R.layout.note_raw,
                 R.id.label,
                 values);
         setListAdapter(adapter);
+    }
+    public void doPositive() {
+        Toast.makeText(AllNotesListActivity.this, "OK Click", Toast.LENGTH_SHORT).show();
     }
 
     protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -116,6 +119,7 @@ public class AllNotesListActivity extends ListActivity {
                 break;
             case R.id.btn_add_audio:
                 soundRecordDialog = new RecordSoundFragment();
+                soundRecordDialog.setCancelable(false);
                 soundRecordDialog.show(getFragmentManager(),"RECORD");
                 break;
             case R.id.btn_add_note:
