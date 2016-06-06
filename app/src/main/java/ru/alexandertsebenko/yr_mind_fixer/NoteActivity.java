@@ -1,13 +1,17 @@
 package ru.alexandertsebenko.yr_mind_fixer;
 
 import android.app.Activity;
+import android.app.TaskStackBuilder;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.File;
 
 
 public class NoteActivity extends Activity {
@@ -17,6 +21,7 @@ public class NoteActivity extends Activity {
     private Bundle b;
     private TextView textView;
     private String tnote = null;
+    private String noteType = null;
     private long tnoteID;
     private final int REQUEST_CODE_ACTIVITY_EDIT_TEXT = 300;
 
@@ -31,6 +36,7 @@ public class NoteActivity extends Activity {
         textView.setText(tnote);
         datasource = new TextNoteDataSource(this);
         datasource.open();
+        noteType = datasource.getNoteTypeByID(tnoteID);
     }
 
     public void onClick(View view) {
@@ -67,11 +73,12 @@ public class NoteActivity extends Activity {
     protected void onResume() {
   //      datasource.open();
         super.onResume();
-    }
+    }*/
 
-    @Override
-    protected void onPause() {
-//        datasource.close();
+
+/*    @Override
+    protected void onStop() {
+        datasource.close();
         super.onPause();
     }*/
 
@@ -83,6 +90,8 @@ public class NoteActivity extends Activity {
                 .setPositiveButton(getString(R.string.text_yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        if(noteType.equals(AllNotesListActivity.NOTE_TYPE_AUDIO) || noteType.equals(AllNotesListActivity.NOTE_TYPE_FOTO))
+                            deleteFileByURI(Uri.parse(tnote));
                         datasource.deleteTextNoteByID(tnoteID);
                         Toast.makeText(NoteActivity.this, R.string.toast_delete, Toast.LENGTH_SHORT).show();
                         startActivity(intentBack);
@@ -95,5 +104,12 @@ public class NoteActivity extends Activity {
                     }
                 })
                 .show();
+    }
+    private void deleteFileByURI(Uri uri){
+        File file = new File(uri.getPath());
+        try {
+            file.delete();
+        } catch (Exception e) {
+        }
     }
 }

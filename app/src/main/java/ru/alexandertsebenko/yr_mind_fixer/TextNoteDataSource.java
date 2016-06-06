@@ -86,7 +86,15 @@ public class TextNoteDataSource {
         cursor.close();
         return textNotes;
     }
+    public String getNoteTypeByID(long id) {
+        String [] columns = {MySQLiteHelper.COLUMN_NOTE_TYPE};
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_TEXT_NOTES,//имя таблицы в Srting
+                columns, MySQLiteHelper.COLUMN_ID + " = " + id, null,
+                null, null, null);
+        cursor.moveToFirst();
+        return cursor.getString(0);
 
+    }
     private TextNote cursorToTextNote(Cursor cursor) {
         TextNote textNote = new TextNote();
         textNote.setId(cursor.getLong(0));
