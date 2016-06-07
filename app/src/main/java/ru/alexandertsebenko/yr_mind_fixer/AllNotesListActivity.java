@@ -2,32 +2,18 @@ package ru.alexandertsebenko.yr_mind_fixer;
 
 
 import android.app.Activity;
-import android.app.ListActivity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Camera;
-import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
-
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -52,53 +38,33 @@ public class AllNotesListActivity extends Activity {
 
     NoteAdapter noteAdapter;
     Uri uri = null;
-    MediaRecorder recorder = new MediaRecorder();
-    boolean recordStarted = false;
-//    String fileName;
     RecordSoundFragment soundRecordDialog;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_all_notes);
 
-//        fileName = Environment.getExternalStorageDirectory() + "/record.3gpp";
         datasource = new TextNoteDataSource(this);
         datasource.open();
-        //makeAdapter();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
-/*    public void makeAdapter() {
-        List<TextNote> values = datasource.getAllTextNotes();
-        ArrayAdapter<TextNote> adapter = new ArrayAdapter<TextNote>(this,
-                R.layout.note_raw,
-                R.id.label,
-                values);
-        setListAdapter(adapter);
-    }*/
     public void makeAdapter() {
         List<TextNote> values = datasource.getAllTextNotes();
         noteAdapter = new NoteAdapter(this, values);
         ListView listView = (ListView)findViewById(R.id.lvMain);
         listView.setAdapter(noteAdapter);
-    }
-/*    protected void onListItemClick(ListView l, View v, int position, long id) {
-        TextNote item = (TextNote) getListAdapter().getItem(position);
-        Intent intent = new Intent(this, NoteActivity.class);
-        Bundle b = new Bundle();
-        b.putString(KEY_TEXT_OF_NOTE, item.getTextNote());
-        b.putLong("ID", item.getId());
-        intent.putExtras(b);
-        startActivity(intent);
-    }*/
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                TextNote item = (TextNote) parent.getItemAtPosition(position);
+                Intent intent = new Intent(AllNotesListActivity.this, NoteActivity.class);
+                Bundle b = new Bundle();
+                b.putString(KEY_TEXT_OF_NOTE, item.getTextNote());
+                b.putLong("ID", item.getId());
+                intent.putExtras(b);
+                startActivity(intent);
+            }});
+        }
 
     public void onClick(View view) throws IOException {
         Intent intent;
@@ -126,7 +92,6 @@ public class AllNotesListActivity extends Activity {
                 soundRecordDialog.show(getFragmentManager(),"RECORD");
                 break;
             case R.id.btn_add_note:
-                Toast.makeText(AllNotesListActivity.this, "note", Toast.LENGTH_SHORT).show();
                 intent = new Intent(this, WriteNoteActivity.class);
                 startActivity(intent);
                 break;
@@ -177,7 +142,6 @@ public class AllNotesListActivity extends Activity {
 
     protected void onResume() {
         datasource.open();
-        Toast.makeText(AllNotesListActivity.this, "onResume1", Toast.LENGTH_SHORT).show();
         makeAdapter();//формируем list
         super.onResume();
     }
@@ -193,62 +157,12 @@ public class AllNotesListActivity extends Activity {
         super.onSaveInstanceState(outState);
         if (uri != null)
             outState.putString("uri", uri.toString());
-/*        if (recordStarted) {
-            outState.putBoolean("recordStarted", recordStarted);
-            outState.putParcelable("recorder", (Parcelable) recorder);
-        }*/
-
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle state) {
         super.onRestoreInstanceState(state);
-        Toast.makeText(AllNotesListActivity.this, "onRestoreInstanceState", Toast.LENGTH_SHORT).show();
         if (state.getString("uri") != null)
             uri = Uri.parse(state.getString("uri"));
-/*        if (state.getBoolean("recordStarted")) {
-            recordStarted = state.getBoolean("recordStarted");
-            recorder = (MediaRecorder) state.getParcelable("recorder");
-        }*/
     }
-
-/*    @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "AllNotesList Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app URL is correct.
-                Uri.parse("android-app://ru.alexandertsebenko.yr_mind_fixer/http/host/path")
-        );
-        AppIndex.AppIndexApi.start(client, viewAction);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "AllNotesList Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app URL is correct.
-                Uri.parse("android-app://ru.alexandertsebenko.yr_mind_fixer/http/host/path")
-        );
-        AppIndex.AppIndexApi.end(client, viewAction);
-        client.disconnect();
-    }*/
 }
