@@ -1,4 +1,4 @@
-package ru.alexandertsebenko.yr_mind_fixer;
+package ru.alexandertsebenko.yr_mind_fixer.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

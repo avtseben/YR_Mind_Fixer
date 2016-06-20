@@ -1,4 +1,4 @@
-package ru.alexandertsebenko.yr_mind_fixer;
+package ru.alexandertsebenko.yr_mind_fixer.datamodel;
 
 public class TextNote {
     private long id;

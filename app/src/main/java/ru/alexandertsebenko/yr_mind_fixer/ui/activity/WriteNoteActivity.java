@@ -1,4 +1,4 @@
-package ru.alexandertsebenko.yr_mind_fixer;
+package ru.alexandertsebenko.yr_mind_fixer.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import ru.alexandertsebenko.yr_mind_fixer.R;
+import ru.alexandertsebenko.yr_mind_fixer.db.TextNoteDataSource;
 
 public class WriteNoteActivity extends Activity {
 

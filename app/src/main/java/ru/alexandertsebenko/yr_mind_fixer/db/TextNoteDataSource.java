@@ -1,4 +1,4 @@
-package ru.alexandertsebenko.yr_mind_fixer;
+package ru.alexandertsebenko.yr_mind_fixer.db;
 
 
 import android.content.ContentValues;
@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ru.alexandertsebenko.yr_mind_fixer.datamodel.TextNote;
 
 public class TextNoteDataSource {
     // Database fields

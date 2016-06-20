@@ -1,4 +1,4 @@
-package ru.alexandertsebenko.yr_mind_fixer;
+package ru.alexandertsebenko.yr_mind_fixer.ui.activity;
 
 
 import android.app.Activity;
@@ -18,23 +18,29 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+import ru.alexandertsebenko.yr_mind_fixer.ui.adapter.NoteAdapter;
+import ru.alexandertsebenko.yr_mind_fixer.R;
+import ru.alexandertsebenko.yr_mind_fixer.ui.fragment.RecordSoundFragment;
+import ru.alexandertsebenko.yr_mind_fixer.datamodel.TextNote;
+import ru.alexandertsebenko.yr_mind_fixer.db.TextNoteDataSource;
+
 public class AllNotesListActivity extends Activity {
     private TextNoteDataSource datasource;
 
-    final static int REQUEST_CODE_TAKE_FOTO = 301;
-    final static int REQUEST_CODE_RECORD_AUDIO = 302;
+    public final static int REQUEST_CODE_TAKE_FOTO = 301;
+    public final static int REQUEST_CODE_RECORD_AUDIO = 302;
 
-    final static String PUBLIC_APP_DIRECTORY = "MindFixerFiles";
-    final static String FOTO_SUB_DIRECTORY = "foto";
-    final static String AUDIO_SUB_DIRECTORY = "audio";
-    final static String VIDEO_SUB_DIRECTORY = "video";
-    final static String APP_LOG_TAG = "app_log_tag";
+    public final static String PUBLIC_APP_DIRECTORY = "MindFixerFiles";
+    public final static String FOTO_SUB_DIRECTORY = "foto";
+    public final static String AUDIO_SUB_DIRECTORY = "audio";
+    public final static String VIDEO_SUB_DIRECTORY = "video";
+    public final static String APP_LOG_TAG = "app_log_tag";
 
-    final static String KEY_TEXT_OF_NOTE = "textOfNote";
-    final static String NOTE_TYPE_TEXT = "text";
-    final static String NOTE_TYPE_AUDIO = "audio";
-    final static String NOTE_TYPE_FOTO = "foto";
-    final static String NOTE_TYPE_VIDEO = "video";
+    public final static String KEY_TEXT_OF_NOTE = "textOfNote";
+    public final static String NOTE_TYPE_TEXT = "text";
+    public final static String NOTE_TYPE_AUDIO = "audio";
+    public final static String NOTE_TYPE_FOTO = "foto";
+    public final static String NOTE_TYPE_VIDEO = "video";
 
     NoteAdapter noteAdapter;
     Uri uri = null;
@@ -97,7 +103,7 @@ public class AllNotesListActivity extends Activity {
                 break;
         }
     }
-    protected static Uri prepareFileUri(String album, String filename) {
+    public static Uri prepareFileUri(String album, String filename) {
         Uri uri = null;
         try {
             File path = getAppStorageDir(album);

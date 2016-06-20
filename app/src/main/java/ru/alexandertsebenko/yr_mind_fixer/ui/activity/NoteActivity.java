@@ -1,7 +1,6 @@
-package ru.alexandertsebenko.yr_mind_fixer;
+package ru.alexandertsebenko.yr_mind_fixer.ui.activity;
 
 import android.app.Activity;
-import android.app.TaskStackBuilder;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -12,6 +11,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+
+import ru.alexandertsebenko.yr_mind_fixer.R;
+import ru.alexandertsebenko.yr_mind_fixer.db.TextNoteDataSource;
 
 
 public class NoteActivity extends Activity {

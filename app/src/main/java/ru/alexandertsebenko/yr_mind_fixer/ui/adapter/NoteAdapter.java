@@ -1,7 +1,6 @@
-package ru.alexandertsebenko.yr_mind_fixer;
+package ru.alexandertsebenko.yr_mind_fixer.ui.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,8 +8,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import ru.alexandertsebenko.yr_mind_fixer.R;
+import ru.alexandertsebenko.yr_mind_fixer.datamodel.TextNote;
+import ru.alexandertsebenko.yr_mind_fixer.ui.activity.AllNotesListActivity;
 
 public class NoteAdapter extends BaseAdapter {
 
@@ -18,7 +20,7 @@ public class NoteAdapter extends BaseAdapter {
     LayoutInflater layoutInflater;
     List<TextNote> notes;
 
-    NoteAdapter(Context context, List<TextNote> notes) {
+    public NoteAdapter(Context context, List<TextNote> notes) {
         this.context = context;
         this.notes = notes;
         layoutInflater = (LayoutInflater) context

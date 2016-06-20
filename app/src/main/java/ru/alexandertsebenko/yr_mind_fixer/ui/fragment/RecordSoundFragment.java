@@ -1,4 +1,4 @@
-package ru.alexandertsebenko.yr_mind_fixer;
+package ru.alexandertsebenko.yr_mind_fixer.ui.fragment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -14,6 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.UUID;
+
+import ru.alexandertsebenko.yr_mind_fixer.R;
+import ru.alexandertsebenko.yr_mind_fixer.db.TextNoteDataSource;
+import ru.alexandertsebenko.yr_mind_fixer.ui.activity.AllNotesListActivity;
+import ru.alexandertsebenko.yr_mind_fixer.ui.activity.NoteActivity;
 
 
 public class RecordSoundFragment extends DialogFragment  implements DialogInterface.OnClickListener {
