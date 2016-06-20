@@ -53,12 +53,12 @@ public class NoteActivity extends Activity {
             case R.id.button_edit_in_note_activity:
                 Intent intentToEdit = new Intent(this, EditNoteActivity.class);
                 intentToEdit.putExtra(AllNotesListActivity.KEY_TEXT_OF_NOTE, textView.getText().toString());
-                startActivityForResult(intentToEdit,REQUEST_CODE_ACTIVITY_EDIT_TEXT);
+                startActivityForResult(intentToEdit, REQUEST_CODE_ACTIVITY_EDIT_TEXT);
                 break;
         }
     }
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {//TODO упростить, сделать без активити реза
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_CODE_ACTIVITY_EDIT_TEXT:
@@ -69,7 +69,7 @@ public class NoteActivity extends Activity {
             }
         }
 
-        }
+    }
 
  /*   @Override
     protected void onResume() {
