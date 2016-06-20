@@ -102,13 +102,6 @@
             </LinearLayout>
 
         </LinearLayout>
-        <fragment
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            class="ru.alexandertsebenko.yr_mind_fixer.ui.fragment.NoteListFragment"
-            android:id="@+id/left_fragment" >
-
-        </fragment>
         <ListView
             android:id="@+id/lvMain"
             android:layout_width="match_parent"
