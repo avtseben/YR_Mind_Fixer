@@ -94,8 +94,9 @@ public class NoteDataSource {
                 columns, MySQLiteHelper.COLUMN_ID + " = " + id, null,
                 null, null, null);
         cursor.moveToFirst();
+        String noteType = cursor.getString(0);
         cursor.close();
-        return cursor.getString(0);
+        return noteType;
 
     }
     private Note cursorToTextNote(Cursor cursor) {

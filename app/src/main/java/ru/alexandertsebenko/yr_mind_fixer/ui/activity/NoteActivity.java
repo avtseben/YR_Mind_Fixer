@@ -1,6 +1,7 @@
 package ru.alexandertsebenko.yr_mind_fixer.ui.activity;
 
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -14,6 +15,7 @@ import java.io.File;
 
 import ru.alexandertsebenko.yr_mind_fixer.R;
 import ru.alexandertsebenko.yr_mind_fixer.db.NoteDataSource;
+import ru.alexandertsebenko.yr_mind_fixer.ui.fragment.TextNoteFragment;
 
 
 public class NoteActivity extends Activity {
@@ -32,13 +34,29 @@ public class NoteActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
         b = getIntent().getExtras();
-        textView = (TextView) findViewById(R.id.note_text);
         tnote = b.getString(AllNotesListActivity.KEY_TEXT_OF_NOTE);
         tnoteID = b.getLong("ID");
-        textView.setText(tnote);
         datasource = new NoteDataSource(this);
         datasource.open();
         noteType = datasource.getNoteTypeByID(tnoteID);
+        //Fragment works
+        switch (noteType) {
+            case AllNotesListActivity.NOTE_TYPE_TEXT:
+                TextNoteFragment tf = new TextNoteFragment();
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.add(R.id.fragment_container_in_note_activity, tf);
+//                transaction.addToBackStack(null);//TODO разобраться как поступать с backStack если он есть то при нажати не кнопку назад заметка очищается, это не нужно.
+                transaction.commit();
+                tf.setTextOfNote(tnote);//Отдаём текст заметки фрагменту
+                break;
+            case AllNotesListActivity.NOTE_TYPE_FOTO:
+                break;
+            case AllNotesListActivity.NOTE_TYPE_AUDIO:
+                break;
+            case AllNotesListActivity.NOTE_TYPE_VIDEO:
+                break;
+
+        }
     }
 
     public void onClick(View view) {

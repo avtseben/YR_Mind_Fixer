@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
+<!--
     <ScrollView
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
@@ -12,6 +13,33 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/note_text" />
     </ScrollView>
+-->
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Title"
+        android:id="@+id/textView"
+        android:layout_weight="1"
+        android:background="@color/colorAddNewBar"
+        android:gravity="center_horizontal" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="20"
+        android:id="@+id/fragment_container_in_note_activity"
+        >
+<!--
+        <fragment
+            class="ru.alexandertsebenko.yr_mind_fixer.ui.fragment.TextNoteFragment"
+            android:id="@+id/text_note_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />-->
+    </FrameLayout>
 
     <FrameLayout
         android:orientation="horizontal"
