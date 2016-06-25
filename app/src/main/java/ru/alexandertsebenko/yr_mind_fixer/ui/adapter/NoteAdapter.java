@@ -11,16 +11,16 @@ import android.widget.TextView;
 import java.util.List;
 
 import ru.alexandertsebenko.yr_mind_fixer.R;
-import ru.alexandertsebenko.yr_mind_fixer.datamodel.TextNote;
+import ru.alexandertsebenko.yr_mind_fixer.datamodel.Note;
 import ru.alexandertsebenko.yr_mind_fixer.ui.activity.AllNotesListActivity;
 
 public class NoteAdapter extends BaseAdapter {
 
     Context context;
     LayoutInflater layoutInflater;
-    List<TextNote> notes;
+    List<Note> notes;
 
-    public NoteAdapter(Context context, List<TextNote> notes) {
+    public NoteAdapter(Context context, List<Note> notes) {
         this.context = context;
         this.notes = notes;
         layoutInflater = (LayoutInflater) context
@@ -44,7 +44,7 @@ public class NoteAdapter extends BaseAdapter {
         if (view == null) {
             view = layoutInflater.inflate(R.layout.note_raw, parent, false);
         }
-        TextNote tn = getNote(position);
+        Note tn = getNote(position);
         //Если текстовая записка содержит заголовок
         TextView tv = (TextView) view.findViewById(R.id.label);
         tv.setText(tn.getTextNote());
@@ -66,8 +66,8 @@ public class NoteAdapter extends BaseAdapter {
         }
         return view;
     }
-    TextNote getNote(int position) {
-        return ((TextNote) getItem(position));
+    Note getNote(int position) {
+        return ((Note) getItem(position));
     }
 
 

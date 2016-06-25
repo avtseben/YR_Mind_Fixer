@@ -10,15 +10,15 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.alexandertsebenko.yr_mind_fixer.datamodel.TextNote;
+import ru.alexandertsebenko.yr_mind_fixer.datamodel.Note;
 
-public class TextNoteDataSource {
+public class NoteDataSource {
     // Database fields
     private SQLiteDatabase database;//обращение к глобальной SQLite БД на Android
     private MySQLiteHelper dbHelper;
     private String[] allColumns = { MySQLiteHelper.COLUMN_ID,//массив в которов все имена колонок таблицы
             MySQLiteHelper.COLUMN_TEXT_NOTE, MySQLiteHelper.COLUMN_NOTE_TITLE,MySQLiteHelper.COLUMN_NOTE_TYPE, MySQLiteHelper.COLUMN_TEXT_NOTE_CREATE_DATE };
-    public TextNoteDataSource(Context context) {
+    public NoteDataSource(Context context) {
         dbHelper = new MySQLiteHelper(context);
     }
 
@@ -32,7 +32,7 @@ public class TextNoteDataSource {
     public SQLiteDatabase getDB() {
         return database;
     }
-    public TextNote createTextNote(String textNote, String textNoteTitle, String textNoteType, long createDate) {
+    public Note createTextNote(String textNote, String textNoteTitle, String textNoteType, long createDate) {
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.COLUMN_TEXT_NOTE, textNote);
         values.put(MySQLiteHelper.COLUMN_NOTE_TITLE, textNoteTitle);
@@ -44,12 +44,12 @@ public class TextNoteDataSource {
                 allColumns,/*какие колонки выбирать аналог select * from*/ MySQLiteHelper.COLUMN_ID + " = " + insertId, null,
                 null, null, null);
         cursor.moveToFirst();
-        TextNote newTextNote = cursorToTextNote(cursor);
+        Note newTextNote = cursorToTextNote(cursor);
         cursor.close();
         return newTextNote;
     }
 
-    public void deleteTextNote(TextNote textNote) {
+    public void deleteTextNote(Note textNote) {
         long id = textNote.getId();
         System.out.println("TextNote deleted with id: " + id);
         database.delete(MySQLiteHelper.TABLE_TEXT_NOTES, MySQLiteHelper.COLUMN_ID
@@ -72,15 +72,15 @@ public class TextNoteDataSource {
         database.update(MySQLiteHelper.TABLE_TEXT_NOTES, updateValues , MySQLiteHelper.COLUMN_ID
                 + " = " + _id, null);
     }
-    public List<TextNote> getAllTextNotes() {
-        List<TextNote> textNotes = new ArrayList<TextNote>();
+    public List<Note> getAllTextNotes() {
+        List<Note> textNotes = new ArrayList<>();
 
         Cursor cursor = database.query(MySQLiteHelper.TABLE_TEXT_NOTES,
                 allColumns, null, null, null, null, "_id" + " DESC");//Выборка всех колонок в обратном порядке TODO: убрать из hardcode
 
         cursor.moveToFirst();//cursor это очень похоже на result set
         while (!cursor.isAfterLast()) {
-            TextNote textNote = cursorToTextNote(cursor);
+            Note textNote = cursorToTextNote(cursor);
             textNotes.add(textNote);
             cursor.moveToNext();
         }
@@ -94,11 +94,12 @@ public class TextNoteDataSource {
                 columns, MySQLiteHelper.COLUMN_ID + " = " + id, null,
                 null, null, null);
         cursor.moveToFirst();
+        cursor.close();
         return cursor.getString(0);
 
     }
-    private TextNote cursorToTextNote(Cursor cursor) {
-        TextNote textNote = new TextNote();
+    private Note cursorToTextNote(Cursor cursor) {
+        Note textNote = new Note();
         textNote.setId(cursor.getLong(0));
         textNote.setTextNote(cursor.getString(1));
         textNote.setNoteTitle(cursor.getString(2));

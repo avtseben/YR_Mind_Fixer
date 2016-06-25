@@ -8,11 +8,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import ru.alexandertsebenko.yr_mind_fixer.R;
-import ru.alexandertsebenko.yr_mind_fixer.db.TextNoteDataSource;
+import ru.alexandertsebenko.yr_mind_fixer.db.NoteDataSource;
 
 public class WriteNoteActivity extends Activity {
 
-    private TextNoteDataSource datasource;
+    private NoteDataSource datasource;
     EditText edtext;
     EditText edtextTitle;
     @Override
@@ -20,7 +20,7 @@ public class WriteNoteActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_write_note);
 
-        datasource = new TextNoteDataSource(this);
+        datasource = new NoteDataSource(this);
         datasource.open();
 
     }

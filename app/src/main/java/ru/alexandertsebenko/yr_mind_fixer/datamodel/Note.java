@@ -1,6 +1,6 @@
 package ru.alexandertsebenko.yr_mind_fixer.datamodel;
 
-public class TextNote {
+public class Note {
     private long id;
     private String note;
     private String noteTitle;

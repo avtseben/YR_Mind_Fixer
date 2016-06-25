@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import java.util.UUID;
 
 import ru.alexandertsebenko.yr_mind_fixer.R;
-import ru.alexandertsebenko.yr_mind_fixer.db.TextNoteDataSource;
+import ru.alexandertsebenko.yr_mind_fixer.db.NoteDataSource;
 import ru.alexandertsebenko.yr_mind_fixer.ui.activity.AllNotesListActivity;
 import ru.alexandertsebenko.yr_mind_fixer.ui.activity.NoteActivity;
 
@@ -26,7 +26,7 @@ public class RecordSoundFragment extends DialogFragment  implements DialogInterf
     Uri uri = null;
     boolean recordStarted = false;
     MediaRecorder recorder = new MediaRecorder();
-    TextNoteDataSource datasource;
+    NoteDataSource datasource;
     String LOG_TAG = "FragmentLog";
 
     @Nullable
@@ -67,7 +67,8 @@ public class RecordSoundFragment extends DialogFragment  implements DialogInterf
             try {
                 releaseRecorder();
                 String randomFileName = UUID.randomUUID().toString();
-                randomFileName = new StringBuffer(randomFileName).append(".3gpp").toString();
+//                randomFileName = new StringBuffer(randomFileName).append(".3gpp").toString();//Заменил из за warninga
+                randomFileName = randomFileName + "." + AllNotesListActivity.SOUND_FILE_FORMAT;
                 uri = AllNotesListActivity.prepareFileUri(AllNotesListActivity.AUDIO_SUB_DIRECTORY, randomFileName);//получаем uri, оно нужно нам для ссылки из БД
                 recorder = new MediaRecorder();
                 recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -89,7 +90,7 @@ public class RecordSoundFragment extends DialogFragment  implements DialogInterf
       if (recorder != null) {
           try {
               recorder.stop();
-              datasource = new TextNoteDataSource(getActivity().getApplicationContext());
+              datasource = new NoteDataSource(getActivity().getApplicationContext());
               datasource.open();
               datasource.createTextNote(uri.toString(), null, AllNotesListActivity.NOTE_TYPE_AUDIO, System.currentTimeMillis());
               ((AllNotesListActivity)getActivity()).makeAdapter();

@@ -13,12 +13,12 @@ import android.widget.Toast;
 import java.io.File;
 
 import ru.alexandertsebenko.yr_mind_fixer.R;
-import ru.alexandertsebenko.yr_mind_fixer.db.TextNoteDataSource;
+import ru.alexandertsebenko.yr_mind_fixer.db.NoteDataSource;
 
 
 public class NoteActivity extends Activity {
 
-    private TextNoteDataSource datasource;
+    private NoteDataSource datasource;
 
     private Bundle b;
     private TextView textView;
@@ -36,7 +36,7 @@ public class NoteActivity extends Activity {
         tnote = b.getString(AllNotesListActivity.KEY_TEXT_OF_NOTE);
         tnoteID = b.getLong("ID");
         textView.setText(tnote);
-        datasource = new TextNoteDataSource(this);
+        datasource = new NoteDataSource(this);
         datasource.open();
         noteType = datasource.getNoteTypeByID(tnoteID);
     }
@@ -110,8 +110,9 @@ public class NoteActivity extends Activity {
     public static void deleteFileByURI(Uri uri){
         File file = new File(uri.getPath());
         try {
-            file.delete();
+            boolean fileDeleted = file.delete();
         } catch (Exception e) {
+            System.out.print(e);
         }
     }
 }

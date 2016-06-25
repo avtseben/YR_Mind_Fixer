@@ -21,11 +21,11 @@ import java.util.UUID;
 import ru.alexandertsebenko.yr_mind_fixer.ui.adapter.NoteAdapter;
 import ru.alexandertsebenko.yr_mind_fixer.R;
 import ru.alexandertsebenko.yr_mind_fixer.ui.fragment.RecordSoundFragment;
-import ru.alexandertsebenko.yr_mind_fixer.datamodel.TextNote;
-import ru.alexandertsebenko.yr_mind_fixer.db.TextNoteDataSource;
+import ru.alexandertsebenko.yr_mind_fixer.datamodel.Note;
+import ru.alexandertsebenko.yr_mind_fixer.db.NoteDataSource;
 
 public class AllNotesListActivity extends Activity {
-    private TextNoteDataSource datasource;
+    private NoteDataSource datasource;
 
     public final static int REQUEST_CODE_TAKE_FOTO = 301;
     public final static int REQUEST_CODE_RECORD_AUDIO = 302;
@@ -42,6 +42,9 @@ public class AllNotesListActivity extends Activity {
     public final static String NOTE_TYPE_FOTO = "foto";
     public final static String NOTE_TYPE_VIDEO = "video";
 
+    public final static String IMAGE_FILE_FORMAT = "jpeg";
+    public final static String SOUND_FILE_FORMAT = "3gpp";
+
     NoteAdapter noteAdapter;
     Uri uri = null;
     RecordSoundFragment soundRecordDialog;
@@ -51,18 +54,18 @@ public class AllNotesListActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_all_notes);
 
-        datasource = new TextNoteDataSource(this);
+        datasource = new NoteDataSource(this);
         datasource.open();
     }
     public void makeAdapter() {
-        List<TextNote> values = datasource.getAllTextNotes();
+        List<Note> values = datasource.getAllTextNotes();
         noteAdapter = new NoteAdapter(this, values);
         ListView listView = (ListView)findViewById(R.id.lvMain);
         listView.setAdapter(noteAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                TextNote item = (TextNote) parent.getItemAtPosition(position);
+                Note item = (Note) parent.getItemAtPosition(position);
                 Intent intent = new Intent(AllNotesListActivity.this, NoteActivity.class);
                 Bundle b = new Bundle();
                 b.putString(KEY_TEXT_OF_NOTE, item.getTextNote());
@@ -83,7 +86,8 @@ public class AllNotesListActivity extends Activity {
                 intent = new Intent();
                 if (isExternalStorageWritable()) {
                     String randomFileName = UUID.randomUUID().toString();
-                    randomFileName = new StringBuffer(randomFileName).append(".jpeg").toString();
+//                    randomFileName = new StringBuffer(randomFileName).append(".jpeg").toString();
+                    randomFileName = randomFileName + "." + IMAGE_FILE_FORMAT;
                     uri = prepareFileUri(FOTO_SUB_DIRECTORY, randomFileName);//получаем uri, оно нужно нам для ссылки из БД
                     intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);//намерение на фотокамеру
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);//указываем куда сохранить
@@ -131,10 +135,7 @@ public class AllNotesListActivity extends Activity {
 
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     public static File getAppStorageDir(String albumName) throws IOException {
