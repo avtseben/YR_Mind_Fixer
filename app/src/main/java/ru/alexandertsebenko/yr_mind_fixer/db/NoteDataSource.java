@@ -6,14 +6,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ru.alexandertsebenko.yr_mind_fixer.datamodel.Note;
+import ru.alexandertsebenko.yr_mind_fixer.util.Log_YR;
 
 public class NoteDataSource {
     // Database fields
+    private Log_YR log = new Log_YR(getClass().toString());
     private SQLiteDatabase database;//обращение к глобальной SQLite БД на Android
     private MySQLiteHelper dbHelper;
     private String[] allColumns = { MySQLiteHelper.COLUMN_ID,//массив в которов все имена колонок таблицы
@@ -24,10 +27,12 @@ public class NoteDataSource {
 
     public void open() throws SQLException {
         database = dbHelper.getWritableDatabase();
+        log.v("DataSource opened");
     }
 
     public void close() {
         dbHelper.close();
+        log.v("DataSource closed");
     }
     public SQLiteDatabase getDB() {
         return database;
@@ -51,28 +56,29 @@ public class NoteDataSource {
 
     public void deleteTextNote(Note textNote) {
         long id = textNote.getId();
-        System.out.println("TextNote deleted with id: " + id);
+        log.v("TextNote deleted with id: " + id);
         database.delete(MySQLiteHelper.TABLE_TEXT_NOTES, MySQLiteHelper.COLUMN_ID
                 + " = " + id, null);
     }
     public void deleteTextNoteByText(String textNote) {
-        System.out.println("TextNote deleted with text: " + textNote);
+        log.v("TextNote deleted with text: " + textNote);
         database.delete(MySQLiteHelper.TABLE_TEXT_NOTES, MySQLiteHelper.COLUMN_TEXT_NOTE
                 + " = " + textNote, null);
     }
     public void deleteTextNoteByID(long _id) {
-        System.out.println("TextNote deleted with id: " + _id);
+        log.v("TextNote deleted with id: " + _id);
         database.delete(MySQLiteHelper.TABLE_TEXT_NOTES, MySQLiteHelper.COLUMN_ID
                 + " = " + _id, null);
     }
     public void updateTextNoteById(long _id, String newText) {
         ContentValues updateValues = new ContentValues();
         updateValues.put(MySQLiteHelper.COLUMN_TEXT_NOTE, newText);
-        System.out.println("TextNote updated with id: " + _id);
+        log.v("TextNote updated with id: " + _id);
         database.update(MySQLiteHelper.TABLE_TEXT_NOTES, updateValues , MySQLiteHelper.COLUMN_ID
                 + " = " + _id, null);
     }
     public List<Note> getAllTextNotes() {
+        log.v("getAllTextNotes");
         List<Note> textNotes = new ArrayList<>();
 
         Cursor cursor = database.query(MySQLiteHelper.TABLE_TEXT_NOTES,
@@ -94,9 +100,20 @@ public class NoteDataSource {
                 columns, MySQLiteHelper.COLUMN_ID + " = " + id, null,
                 null, null, null);
         cursor.moveToFirst();
-        String noteType = cursor.getString(0);
+        String s = cursor.getString(0);
         cursor.close();
-        return noteType;
+        return s;
+
+    }
+    public String getNoteTextByID(long id) {
+        String [] columns = {MySQLiteHelper.COLUMN_TEXT_NOTE};
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_TEXT_NOTES,//имя таблицы в Srting
+                columns, MySQLiteHelper.COLUMN_ID + " = " + id, null,
+                null, null, null);
+        cursor.moveToFirst();
+        String s = cursor.getString(0);
+        cursor.close();
+        return s;
 
     }
     private Note cursorToTextNote(Cursor cursor) {

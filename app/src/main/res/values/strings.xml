@@ -23,5 +23,6 @@
     <string name="record_dialog_positive">OK</string>
     <string name="record_dialog_negative">Отмена</string>
     <string name="empty" />
+    <string name="imagefoto">imageFoto</string>
 
 </resources>

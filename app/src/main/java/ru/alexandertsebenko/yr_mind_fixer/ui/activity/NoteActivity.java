@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,7 +16,9 @@ import java.io.File;
 
 import ru.alexandertsebenko.yr_mind_fixer.R;
 import ru.alexandertsebenko.yr_mind_fixer.db.NoteDataSource;
+import ru.alexandertsebenko.yr_mind_fixer.ui.fragment.ImageFragment;
 import ru.alexandertsebenko.yr_mind_fixer.ui.fragment.TextNoteFragment;
+import ru.alexandertsebenko.yr_mind_fixer.util.Log_YR;
 
 
 public class NoteActivity extends Activity {
@@ -23,42 +26,61 @@ public class NoteActivity extends Activity {
     private NoteDataSource datasource;
 
     private Bundle b;
-    private TextView textView;
     private String tnote = null;
+    private String uri = null;
     private String noteType = null;
     private long tnoteID;
     private final int REQUEST_CODE_ACTIVITY_EDIT_TEXT = 300;
+    private final String NOTE_ID_KEY = "NOTE_ID";
+    private final String TEXT_FRAGMENT_TAG = "textFragmentTag";
+    private Log_YR log = new Log_YR(getClass().toString());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        log.v("NoteActivity created");
         setContentView(R.layout.activity_note);
         b = getIntent().getExtras();
-        tnote = b.getString(AllNotesListActivity.KEY_TEXT_OF_NOTE);
-        tnoteID = b.getLong("ID");
+        tnoteID = b.getLong(AllNotesListActivity.KEY_ID);
         datasource = new NoteDataSource(this);
         datasource.open();
         noteType = datasource.getNoteTypeByID(tnoteID);
+        tnote = datasource.getNoteTextByID(tnoteID);
         //Fragment works
+        setFragment(noteType, tnote);
+    }
+
+    public void setFragment(String noteType, String noteText) {
+        log.v("setFragment called");
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
         switch (noteType) {
             case AllNotesListActivity.NOTE_TYPE_TEXT:
+                log.v("setFragment TEXT TYPE");
                 TextNoteFragment tf = new TextNoteFragment();
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                transaction.add(R.id.fragment_container_in_note_activity, tf);
+                transaction.add(R.id.fragment_container_in_note_activity, tf, TEXT_FRAGMENT_TAG);
 //                transaction.addToBackStack(null);//TODO разобраться как поступать с backStack если он есть то при нажати не кнопку назад заметка очищается, это не нужно.
                 transaction.commit();
                 tf.setTextOfNote(tnote);//Отдаём текст заметки фрагменту
                 break;
-            case AllNotesListActivity.NOTE_TYPE_FOTO:
+            case AllNotesListActivity.NOTE_TYPE_FOTO://TODO разобраться почему при смене ориентации выскакивает NullPointException в ImageFragment.onStart
+                uri = tnote;//Если заметка фотографическая то в качестве текста франиться uri ссылка на файл фотографии
+                ImageFragment imageFragment = new ImageFragment();
+                imageFragment.setFileByStringUri(uri);
+                transaction.add(R.id.fragment_container_in_note_activity, imageFragment);
+                transaction.commit();
                 break;
             case AllNotesListActivity.NOTE_TYPE_AUDIO:
+                uri = tnote;
+/*                ImageFragment imageFragment = new ImageFragment();
+                imageFragment.setFileByStringUri(uri);
+                transaction.add(R.id.fragment_container_in_note_activity, imageFragment);
+                transaction.commit();*/
                 break;
             case AllNotesListActivity.NOTE_TYPE_VIDEO:
                 break;
 
         }
     }
-
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_delete_in_note_activity:
@@ -70,7 +92,7 @@ public class NoteActivity extends Activity {
                 break;
             case R.id.button_edit_in_note_activity:
                 Intent intentToEdit = new Intent(this, EditNoteActivity.class);
-                intentToEdit.putExtra(AllNotesListActivity.KEY_TEXT_OF_NOTE, textView.getText().toString());
+                intentToEdit.putExtra(AllNotesListActivity.KEY_TEXT_OF_NOTE, tnote);
                 startActivityForResult(intentToEdit, REQUEST_CODE_ACTIVITY_EDIT_TEXT);
                 break;
         }
@@ -81,27 +103,43 @@ public class NoteActivity extends Activity {
             switch (requestCode) {
                 case REQUEST_CODE_ACTIVITY_EDIT_TEXT:
                     String newText = data.getStringExtra(AllNotesListActivity.KEY_TEXT_OF_NOTE);
-                    textView.setText(newText);
+                    log.v("Edit text Result");
+                    //Update in storage
+                    datasource.open();
                     datasource.updateTextNoteById(tnoteID, newText);
+                    //Refresh current text to see it
+                    TextNoteFragment tf = (TextNoteFragment) getFragmentManager().findFragmentByTag(TEXT_FRAGMENT_TAG);
+                    tf.setTextOfNote(newText);
                     break;
             }
         }
 
     }
-
- /*   @Override
+   @Override
+    protected void onStart() {
+        log.v("NoteActivity started");
+        super.onStart();
+    }
     protected void onResume() {
-  //      datasource.open();
+        log.v("NoteActivity resumed");
         super.onResume();
-    }*/
-
-
-/*    @Override
-    protected void onStop() {
+    }
+    @Override
+    protected void onPause() {
         datasource.close();
+        log.v("NoteActivity paused");
         super.onPause();
-    }*/
-
+    }
+    @Override
+    protected void onStop() {
+        log.v("NoteActivity stoped");
+        super.onStop();
+    }
+    @Override
+    protected void onDestroy() {
+        log.v("NoteActivity destroyed");
+        super.onDestroy();
+    }
     public void createDialog(View view) {
         final Intent intentBack = new Intent(this, AllNotesListActivity.class);
         new AlertDialog.Builder(view.getContext())
@@ -110,6 +148,7 @@ public class NoteActivity extends Activity {
                 .setPositiveButton(getString(R.string.text_yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        log.v("Delete note clicked");
                         if(noteType.equals(AllNotesListActivity.NOTE_TYPE_AUDIO) || noteType.equals(AllNotesListActivity.NOTE_TYPE_FOTO))
                             deleteFileByURI(Uri.parse(tnote));
                         datasource.deleteTextNoteByID(tnoteID);
@@ -131,6 +170,21 @@ public class NoteActivity extends Activity {
             boolean fileDeleted = file.delete();
         } catch (Exception e) {
             System.out.print(e);
+        }
+    }
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //Сохранем ссылку на заметку, только ID
+        if (tnoteID > 0)
+            outState.putLong(NOTE_ID_KEY, tnoteID);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle state) {
+        super.onRestoreInstanceState(state);
+        if (state.getLong(NOTE_ID_KEY) > 0) {
+            tnoteID = state.getLong(NOTE_ID_KEY);
+            Toast.makeText(NoteActivity.this, "note id " + tnoteID +" restored",Toast.LENGTH_SHORT).show();
         }
     }
 }

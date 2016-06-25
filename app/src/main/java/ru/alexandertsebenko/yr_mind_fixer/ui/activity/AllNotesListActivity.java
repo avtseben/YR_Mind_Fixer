@@ -23,6 +23,7 @@ import ru.alexandertsebenko.yr_mind_fixer.R;
 import ru.alexandertsebenko.yr_mind_fixer.ui.fragment.RecordSoundFragment;
 import ru.alexandertsebenko.yr_mind_fixer.datamodel.Note;
 import ru.alexandertsebenko.yr_mind_fixer.db.NoteDataSource;
+import ru.alexandertsebenko.yr_mind_fixer.util.Log_YR;
 
 public class AllNotesListActivity extends Activity {
     private NoteDataSource datasource;
@@ -37,6 +38,7 @@ public class AllNotesListActivity extends Activity {
     public final static String APP_LOG_TAG = "app_log_tag";
 
     public final static String KEY_TEXT_OF_NOTE = "textOfNote";
+    public final static String KEY_ID = "ID";
     public final static String NOTE_TYPE_TEXT = "text";
     public final static String NOTE_TYPE_AUDIO = "audio";
     public final static String NOTE_TYPE_FOTO = "foto";
@@ -68,8 +70,7 @@ public class AllNotesListActivity extends Activity {
                 Note item = (Note) parent.getItemAtPosition(position);
                 Intent intent = new Intent(AllNotesListActivity.this, NoteActivity.class);
                 Bundle b = new Bundle();
-                b.putString(KEY_TEXT_OF_NOTE, item.getTextNote());
-                b.putLong("ID", item.getId());
+                b.putLong(KEY_ID, item.getId());
                 intent.putExtras(b);
                 startActivity(intent);
             }});
@@ -86,7 +87,6 @@ public class AllNotesListActivity extends Activity {
                 intent = new Intent();
                 if (isExternalStorageWritable()) {
                     String randomFileName = UUID.randomUUID().toString();
-//                    randomFileName = new StringBuffer(randomFileName).append(".jpeg").toString();
                     randomFileName = randomFileName + "." + IMAGE_FILE_FORMAT;
                     uri = prepareFileUri(FOTO_SUB_DIRECTORY, randomFileName);//получаем uri, оно нужно нам для ссылки из БД
                     intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);//намерение на фотокамеру
