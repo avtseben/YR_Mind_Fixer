@@ -24,5 +24,11 @@
     <string name="record_dialog_negative">Отмена</string>
     <string name="empty" />
     <string name="imagefoto">imageFoto</string>
+    <string name="no_file_to_show_toast">А файла то нет :(</string>
+    <string name="pause_btn">Pause</string>
+    <string name="play_btn">Play</string>
+    <string name="stop_btn">Stop</string>
+    <string name="back_btn">Back</string>
+    <string name="fwd_btn">Fwd</string>
 
 </resources>

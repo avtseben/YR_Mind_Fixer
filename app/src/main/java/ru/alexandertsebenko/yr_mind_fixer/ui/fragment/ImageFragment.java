@@ -1,6 +1,6 @@
 package ru.alexandertsebenko.yr_mind_fixer.ui.fragment;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -40,10 +40,10 @@ public class ImageFragment extends Fragment {
             imageView = (ImageView)view.findViewById(R.id.image_view_in_foto_note_fragment);
             //Загрузить из файла картинку
             if(imageFile.exists()){
-                Bitmap bm = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+                Bitmap bm = BitmapFactory.decodeFile(imageFile.getAbsolutePath());//TODO проблема с поворотом когда рисунок при повороте на 90 градусов должен перерисоваться
                 imageView.setImageBitmap(bm);
             } else {
-                Toast.makeText(view.getContext(), "А файла то нет :(", Toast.LENGTH_SHORT).show();
+                Toast.makeText(view.getContext(), R.string.no_file_to_show_toast, Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -1,15 +1,17 @@
 package ru.alexandertsebenko.yr_mind_fixer.ui.activity;
 
 import android.app.Activity;
-import android.app.FragmentTransaction;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -17,11 +19,12 @@ import java.io.File;
 import ru.alexandertsebenko.yr_mind_fixer.R;
 import ru.alexandertsebenko.yr_mind_fixer.db.NoteDataSource;
 import ru.alexandertsebenko.yr_mind_fixer.ui.fragment.ImageFragment;
+import ru.alexandertsebenko.yr_mind_fixer.ui.fragment.PlaySoundFragment;
 import ru.alexandertsebenko.yr_mind_fixer.ui.fragment.TextNoteFragment;
 import ru.alexandertsebenko.yr_mind_fixer.util.Log_YR;
 
 
-public class NoteActivity extends Activity {
+public class NoteActivity extends AppCompatActivity {
 
     private NoteDataSource datasource;
 
@@ -52,7 +55,9 @@ public class NoteActivity extends Activity {
 
     public void setFragment(String noteType, String noteText) {
         log.v("setFragment called");
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        FragmentManager supportFragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = supportFragmentManager.beginTransaction();
+//        FragmentTransaction transaction = getFragmentManager().beginTransaction();
         switch (noteType) {
             case AllNotesListActivity.NOTE_TYPE_TEXT:
                 log.v("setFragment TEXT TYPE");
@@ -70,11 +75,12 @@ public class NoteActivity extends Activity {
                 transaction.commit();
                 break;
             case AllNotesListActivity.NOTE_TYPE_AUDIO:
+                log.v("set fragment audio");
                 uri = tnote;
-/*                ImageFragment imageFragment = new ImageFragment();
-                imageFragment.setFileByStringUri(uri);
-                transaction.add(R.id.fragment_container_in_note_activity, imageFragment);
-                transaction.commit();*/
+                PlaySoundFragment psf = new PlaySoundFragment();
+                transaction.add(R.id.fragment_container_in_note_activity, psf);
+                transaction.commit();
+                psf.setMediaPlayerSource(uri);
                 break;
             case AllNotesListActivity.NOTE_TYPE_VIDEO:
                 break;
@@ -108,7 +114,7 @@ public class NoteActivity extends Activity {
                     datasource.open();
                     datasource.updateTextNoteById(tnoteID, newText);
                     //Refresh current text to see it
-                    TextNoteFragment tf = (TextNoteFragment) getFragmentManager().findFragmentByTag(TEXT_FRAGMENT_TAG);
+                    TextNoteFragment tf = (TextNoteFragment) getSupportFragmentManager().findFragmentByTag(TEXT_FRAGMENT_TAG);
                     tf.setTextOfNote(newText);
                     break;
             }

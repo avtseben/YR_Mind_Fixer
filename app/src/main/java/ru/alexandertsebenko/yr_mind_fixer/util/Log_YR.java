@@ -1,6 +1,8 @@
 package ru.alexandertsebenko.yr_mind_fixer.util;
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 public class Log_YR {
 
