@@ -93,8 +93,7 @@ public class NoteActivity extends AppCompatActivity {
                 createDialog(view);
                 break;
             case R.id.button_later_in_note_activity:
-                final Intent intentBack = new Intent(this, AllNotesListActivity.class);
-                startActivity(intentBack);
+                onBackPressed();
                 break;
             case R.id.button_edit_in_note_activity:
                 Intent intentToEdit = new Intent(this, EditNoteActivity.class);

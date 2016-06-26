@@ -32,11 +32,14 @@ public class PlaySoundFragment extends Fragment implements View.OnClickListener{
     private Button mForwarButton;
     private Log_YR log;
     private View view;
+    private boolean mCanWePlay;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        log = new Log_YR("Play_Sound_Fragment");
+        log.v("PlaySoundFragment createView called");
         setRetainInstance(true);//На воспроизведение звука не будет влиять изменение ориентации и уход в фон
         return inflater.inflate(R.layout.fragment_sound_play,container,false);
     }
@@ -57,7 +60,6 @@ public class PlaySoundFragment extends Fragment implements View.OnClickListener{
             mBackButton.setOnClickListener(this);
             mForwarButton.setOnClickListener(this);
 
-            log = new Log_YR("Play_Sound_Fragment");
             am = (AudioManager)view.getContext().getSystemService(Context.AUDIO_SERVICE);
         }
     }
@@ -70,7 +72,7 @@ public class PlaySoundFragment extends Fragment implements View.OnClickListener{
                 mediaPlayer.prepare();
                 log.v("MediaPlayer prepared to play file from Uri: " + uri);
             } catch (Exception e) {
-//                log.e("Cannot play");
+                System.out.println("Can not play, maybe file don't exist");
             }
     }
     public void onClick(View view) {
