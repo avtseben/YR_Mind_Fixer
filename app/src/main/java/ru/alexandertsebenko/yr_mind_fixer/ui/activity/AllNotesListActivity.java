@@ -37,6 +37,7 @@ public class AllNotesListActivity extends Activity {
     public final static String VIDEO_SUB_DIRECTORY = "video";
     public final static String APP_LOG_TAG = "app_log_tag";
 
+    public final static String KEY_TITLE_OF_NOTE = "title";
     public final static String KEY_TEXT_OF_NOTE = "textOfNote";
     public final static String KEY_ID = "ID";
     public final static String NOTE_TYPE_TEXT = "text";

@@ -2,28 +2,53 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-<!--
-    <ScrollView
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_weight="100">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/note_text" />
-    </ScrollView>
--->
 
-    <TextView
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Title"
-        android:id="@+id/textView"
-        android:layout_weight="1"
-        android:background="@color/colorAddNewBar"
-        android:gravity="center_horizontal" />
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="53dp"
+            android:layout_height="match_parent"
+            android:id="@+id/icon_in_note_activity"
+            android:src="@drawable/stickynotes"
+            android:background="@color/colorAddNewBar" />
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="vertical"
+            android:background="@color/colorAddNewBar">
+
+            <TableRow
+                android:layout_width="256dp"
+                android:layout_height="48dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:id="@+id/note_title_in_note_activity"
+                    android:text="Title"
+                    />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="128dp"
+                android:layout_height="16dp">
+
+                <TextView
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="date"
+                    android:id="@+id/date_subtitle"
+                    android:layout_column="0"
+                    android:layout_height="16dp"
+                    android:layout_width="256dp" />
+            </TableRow>
+        </TableLayout>
+
+    </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -32,13 +57,6 @@
         android:layout_weight="20"
         android:id="@+id/fragment_container_in_note_activity"
         >
-<!--
-        <fragment
-            class="ru.alexandertsebenko.yr_mind_fixer.ui.fragment.TextNoteFragment"
-            android:id="@+id/text_note_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />-->
     </FrameLayout>
 
     <FrameLayout

@@ -77,6 +77,13 @@ public class NoteDataSource {
         database.update(MySQLiteHelper.TABLE_TEXT_NOTES, updateValues , MySQLiteHelper.COLUMN_ID
                 + " = " + _id, null);
     }
+    public void updateTitleByID(long _id, String newText) {
+        ContentValues updateValues = new ContentValues();
+        updateValues.put(MySQLiteHelper.COLUMN_NOTE_TITLE, newText);
+        log.v("TextNote updated with id: " + _id);
+        database.update(MySQLiteHelper.TABLE_TEXT_NOTES, updateValues , MySQLiteHelper.COLUMN_ID
+                + " = " + _id, null);
+    }
     public List<Note> getAllTextNotes() {
         log.v("getAllTextNotes");
         List<Note> textNotes = new ArrayList<>();
@@ -103,7 +110,6 @@ public class NoteDataSource {
         String s = cursor.getString(0);
         cursor.close();
         return s;
-
     }
     public String getNoteTextByID(long id) {
         String [] columns = {MySQLiteHelper.COLUMN_TEXT_NOTE};
@@ -114,7 +120,26 @@ public class NoteDataSource {
         String s = cursor.getString(0);
         cursor.close();
         return s;
-
+    }
+    public String getTitleByID(long id) {
+        String [] columns = {MySQLiteHelper.COLUMN_NOTE_TITLE};
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_TEXT_NOTES,//имя таблицы в Srting
+                columns, MySQLiteHelper.COLUMN_ID + " = " + id, null,
+                null, null, null);
+        cursor.moveToFirst();
+        String s = cursor.getString(0);
+        cursor.close();
+        return s;
+    }
+    public long getCreationDateByID(long id) {
+        String [] columns = {MySQLiteHelper.COLUMN_TEXT_NOTE_CREATE_DATE};
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_TEXT_NOTES,//имя таблицы в Srting
+                columns, MySQLiteHelper.COLUMN_ID + " = " + id, null,
+                null, null, null);
+        cursor.moveToFirst();
+        long l = cursor.getLong(0);
+        cursor.close();
+        return l;
     }
     private Note cursorToTextNote(Cursor cursor) {
         Note textNote = new Note();

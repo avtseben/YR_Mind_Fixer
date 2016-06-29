@@ -1,6 +1,5 @@
 package ru.alexandertsebenko.yr_mind_fixer.ui.activity;
 
-import android.app.Activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,9 +11,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.util.Date;
 
 import ru.alexandertsebenko.yr_mind_fixer.R;
 import ru.alexandertsebenko.yr_mind_fixer.db.NoteDataSource;
@@ -30,13 +33,20 @@ public class NoteActivity extends AppCompatActivity {
 
     private Bundle b;
     private String tnote = null;
+    private TextView mTitleTextView;
+    private TextView mDateSubtitle;
     private String uri = null;
     private String noteType = null;
     private long tnoteID;
+    private String mNoteTitle;
     private final int REQUEST_CODE_ACTIVITY_EDIT_TEXT = 300;
     private final String NOTE_ID_KEY = "NOTE_ID";
     private final String TEXT_FRAGMENT_TAG = "textFragmentTag";
     private Log_YR log = new Log_YR(getClass().toString());
+    private final long MINUTE_IN_SECS = 60;
+    private final long HOUR_IN_SECS = 3600;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,21 +59,66 @@ public class NoteActivity extends AppCompatActivity {
         datasource.open();
         noteType = datasource.getNoteTypeByID(tnoteID);
         tnote = datasource.getNoteTextByID(tnoteID);
+        setNoteTitle();
         //Fragment works
         setFragment(noteType, tnote);
+        //Если заметка не текстовая то редакитровать нечего. Прячем кнопку
+        if(!noteType.equals(AllNotesListActivity.NOTE_TYPE_TEXT)) {
+            findViewById(R.id.button_edit_in_note_activity).setVisibility(View.INVISIBLE);
+        }
+
+    }
+    private void setNoteTitle() {
+        //Set Icon. Text type note is default
+        ImageView icon = (ImageView)findViewById(R.id.icon_in_note_activity);
+        switch(noteType) {
+            case(AllNotesListActivity.NOTE_TYPE_FOTO):
+                icon.setImageResource(R.drawable.camera);
+                break;
+            case(AllNotesListActivity.NOTE_TYPE_AUDIO):
+                icon.setImageResource(R.drawable.microphone);
+                break;
+        }
+        //Set Title
+        mTitleTextView= (TextView)findViewById(R.id.note_title_in_note_activity);
+        mNoteTitle = datasource.getTitleByID(tnoteID);
+        if(mNoteTitle == null) {
+            mTitleTextView.setText(R.string.default_note_title);
+        } else {
+            mTitleTextView.setText(mNoteTitle);
+        }
+        //Set Date subtitle
+        mDateSubtitle= (TextView)findViewById(R.id.date_subtitle);
+        long noteCreationTime = datasource.getCreationDateByID(tnoteID);
+        mDateSubtitle.setText(timeTitleBuilder(noteCreationTime));
+    }
+    private String timeTitleBuilder(long noteCreationTime) {
+        long currentTime = System.currentTimeMillis();
+        if(currentTime >= noteCreationTime) {
+            long timeDeltaInSecs = Math.round((currentTime - noteCreationTime) / 1000);
+            if (timeDeltaInSecs >= HOUR_IN_SECS * 24) {
+                Date simpleDate = new Date(noteCreationTime);
+                String dateFormat = DateFormat.getInstance().format(simpleDate);
+                return dateFormat;
+            } else if (timeDeltaInSecs >= HOUR_IN_SECS) {
+                return Math.round(timeDeltaInSecs / HOUR_IN_SECS) + getString(R.string.hour_ago);
+            } else if (timeDeltaInSecs >= MINUTE_IN_SECS) {
+                return Math.round(timeDeltaInSecs / MINUTE_IN_SECS) + getString(R.string.minutes_ago);
+            }
+            return timeDeltaInSecs + getString(R.string.seconds_ago);
+        }
+        return getString(R.string.note_made_in_future_humor);
     }
 
     public void setFragment(String noteType, String noteText) {
         log.v("setFragment called");
         FragmentManager supportFragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = supportFragmentManager.beginTransaction();
-//        FragmentTransaction transaction = getFragmentManager().beginTransaction();
         switch (noteType) {
             case AllNotesListActivity.NOTE_TYPE_TEXT:
                 log.v("setFragment TEXT TYPE");
                 TextNoteFragment tf = new TextNoteFragment();
                 transaction.add(R.id.fragment_container_in_note_activity, tf, TEXT_FRAGMENT_TAG);
-//                transaction.addToBackStack(null);//TODO разобраться как поступать с backStack если он есть то при нажати не кнопку назад заметка очищается, это не нужно.
                 transaction.commit();
                 tf.setTextOfNote(tnote);//Отдаём текст заметки фрагменту
                 break;
@@ -98,6 +153,7 @@ public class NoteActivity extends AppCompatActivity {
             case R.id.button_edit_in_note_activity:
                 Intent intentToEdit = new Intent(this, EditNoteActivity.class);
                 intentToEdit.putExtra(AllNotesListActivity.KEY_TEXT_OF_NOTE, tnote);
+                intentToEdit.putExtra(AllNotesListActivity.KEY_TITLE_OF_NOTE, mNoteTitle);
                 startActivityForResult(intentToEdit, REQUEST_CODE_ACTIVITY_EDIT_TEXT);
                 break;
         }
@@ -107,11 +163,14 @@ public class NoteActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_CODE_ACTIVITY_EDIT_TEXT:
+                    String newTitle = data.getStringExtra(AllNotesListActivity.KEY_TITLE_OF_NOTE);
                     String newText = data.getStringExtra(AllNotesListActivity.KEY_TEXT_OF_NOTE);
                     log.v("Edit text Result");
                     //Update in storage
                     datasource.open();
+                    mTitleTextView.setText(newTitle);
                     datasource.updateTextNoteById(tnoteID, newText);
+                    datasource.updateTitleByID(tnoteID, newTitle);
                     //Refresh current text to see it
                     TextNoteFragment tf = (TextNoteFragment) getSupportFragmentManager().findFragmentByTag(TEXT_FRAGMENT_TAG);
                     tf.setTextOfNote(newText);
@@ -158,7 +217,7 @@ public class NoteActivity extends AppCompatActivity {
                             deleteFileByURI(Uri.parse(tnote));
                         datasource.deleteTextNoteByID(tnoteID);
                         Toast.makeText(NoteActivity.this, R.string.toast_delete, Toast.LENGTH_SHORT).show();
-                        startActivity(intentBack);
+                        onBackPressed();
                     }
                 })
                 .setNegativeButton(getString(R.string.text_no), new DialogInterface.OnClickListener() {

@@ -53,7 +53,7 @@ public class NoteAdapter extends BaseAdapter {
             case (AllNotesListActivity.NOTE_TYPE_TEXT):
                 ((ImageView) view.findViewById(R.id.icon)).setImageResource(R.drawable.stickynotes);
                 //Если у заметки есть заголовок то печатаем его
-                if(!tn.getNoteTitle().equals("")) {
+                if(tn.getNoteTitle() != null) {
                     tv.setText(tn.getNoteTitle());
                 }
                 break;

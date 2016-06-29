@@ -30,5 +30,10 @@
     <string name="stop_btn">Stop</string>
     <string name="back_btn">Back</string>
     <string name="fwd_btn">Fwd</string>
+    <string name="default_note_title">Заметка</string>
+    <string name="hour_ago">" час. назад"</string>
+    <string name="minutes_ago">" мин. назад"</string>
+    <string name="seconds_ago">" сек. назад"</string>
+    <string name="note_made_in_future_humor">привет от Марти Макфлая</string>
 
 </resources>

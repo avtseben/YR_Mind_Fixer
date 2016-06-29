@@ -36,8 +36,11 @@ public class WriteNoteActivity extends Activity {
                 long currentUnixTime = System.currentTimeMillis();
                 if (note.length() != 0) {
                     Toast.makeText(this, R.string.toast_note_write_ok,Toast.LENGTH_SHORT).show();
-                    datasource.createTextNote(note, noteTitle,AllNotesListActivity.NOTE_TYPE_TEXT,currentUnixTime);//Заносим в БД
-                    startActivity(intentBack);
+                    if(noteTitle.length() != 0) {
+                        datasource.createTextNote(note, noteTitle, AllNotesListActivity.NOTE_TYPE_TEXT, currentUnixTime);//Заносим в БД
+                    } else
+                        datasource.createTextNote(note, null, AllNotesListActivity.NOTE_TYPE_TEXT, currentUnixTime);//Заносим в БД
+                    onBackPressed();
                 } else {
                     Toast.makeText(this, R.string.toast_note_is_null,Toast.LENGTH_SHORT).show();
                 }

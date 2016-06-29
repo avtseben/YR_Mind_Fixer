@@ -7,19 +7,23 @@ import android.view.View;
 import android.widget.EditText;
 
 import ru.alexandertsebenko.yr_mind_fixer.R;
-import ru.alexandertsebenko.yr_mind_fixer.ui.activity.AllNotesListActivity;
 
 public class EditNoteActivity extends Activity {
 
+    EditText editTitleText;
     EditText editText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_note);
-        editText = (EditText) findViewById(R.id.editText2);
-        editText.setText(
-                    getIntent().getStringExtra(AllNotesListActivity.KEY_TEXT_OF_NOTE)
+        editTitleText = (EditText) findViewById(R.id.edit_text_title);
+        editTitleText.setText(
+                    getIntent().getStringExtra(AllNotesListActivity.KEY_TITLE_OF_NOTE)
                     );
+        editText = (EditText) findViewById(R.id.edit_text_note);
+        editText.setText(
+                getIntent().getStringExtra(AllNotesListActivity.KEY_TEXT_OF_NOTE)
+        );
 
     }
     public void onCancel(View view) {
@@ -29,6 +33,7 @@ public class EditNoteActivity extends Activity {
     }
     public void onSave(View view) {
         Intent intent = new Intent();
+        intent.putExtra(AllNotesListActivity.KEY_TITLE_OF_NOTE, editTitleText.getText().toString());
         intent.putExtra(AllNotesListActivity.KEY_TEXT_OF_NOTE, editText.getText().toString());
         setResult(RESULT_OK, intent);
         finish();
